@@ -116,8 +116,6 @@ namespace rpaextract.Pickle
                                 ms.Read(buffer, 0, buffer.Length);
                                 // Convert read bytes to an integer
                                 var length = BitConverter.ToInt32(buffer, 0);
-                                // Check for valid length here. If the parser fails this could return an invalid value which could lead to a memory leak.
-                                if(length > sbyte.MaxValue)
                                 // Read string bytes
                                 buffer = new byte[length];
                                 ms.Read(buffer, 0, buffer.Length);

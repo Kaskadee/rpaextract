@@ -20,7 +20,7 @@ namespace rpaextract.Extensions
             // Search until line-break is found or end of stream has been reached
             while (stream.Position < stream.Length)
             {
-                var newChar = stream.ReadByte();
+                var newChar = (char)stream.ReadByte();
                 if (newChar == '\n')
                     return sb.ToString();
                 sb.Append(newChar);
