@@ -13,7 +13,7 @@ namespace rpaextract.Pickle {
     /// <summary>
     ///     A simple pickle parser for deserializing RPA python pickles into C# objects.
     /// </summary>
-    public sealed class PickleParser {
+    internal sealed class PickleParser {
         /// <summary>
         ///     The supported protocol version which can be unpickled by this parser.
         /// </summary>
