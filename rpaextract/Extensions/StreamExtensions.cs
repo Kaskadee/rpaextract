@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Diagnostics.Contracts;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace rpaextract.Extensions {
     /// <summary>
@@ -32,12 +34,21 @@ namespace rpaextract.Extensions {
         /// <param name="stream">The stream to read from.</param>
         public static byte[] ReadToEnd(this Stream stream) {
             using (var ms = new MemoryStream()) {
-                // Default buffer size is set to 4096 bytes.
-                var buffer = new byte[4096];
-                int count;
-                // Reads from the binary reader until no data (End Of Stream) is fetched anymore.
-                while ((count = stream.Read(buffer, 0, buffer.Length)) != 0)
-                    ms.Write(buffer, 0, count);
+                // Copy contents of stream to memory.
+                stream.CopyTo(ms);
+                return ms.ToArray();
+            }
+        }
+
+        /// <summary>
+        ///     Reads all remaining bytes from the specified stream into a byte array.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <returns>The read data from the specified stream.</returns>
+        public static async Task<byte[]> ReadToEndAsync(this Stream stream) {
+            using (var ms = new MemoryStream()) {
+                // Copy contents of stream to memory.
+                await stream.CopyToAsync(ms);
                 return ms.ToArray();
             }
         }
