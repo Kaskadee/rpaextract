@@ -133,29 +133,26 @@ namespace rpaextract {
         /// <returns>A list of all file indicies found in the archive.</returns>
         private IEnumerable<ArchiveIndex> ExtractIndices() {
             var parser = new PickleParser();
-            // Open archive in read-only mode
+            // Open archive in read-only mode.
             using (var fs = _info.OpenRead()) {
                 // Read header line and split it at whitespace.
                 var header = fs.ReadLine();
                 var splitted = header.Split((char) 0x20);
                 // Retrieve hexadecimal offset and convert it to an integer value.
                 var offset = Convert.ToInt32(splitted[1], 16);
-                // Seek to the determined offset
+                // Seek to the determined offset and read archive structure.
                 fs.Seek(offset, SeekOrigin.Begin);
-                // Read the rest of the file (file metadata)
-                var data = fs.ReadToEnd();
-                // Open data in memory stream and decompress with zlib
-                var ms = new MemoryStream(data);
-                var stream = new ZlibStream(ms, CompressionMode.Decompress);
-                var decompressed = stream.ReadToEnd();
-                // Unpickle the decompressed data
-                var deserialized = parser.Unpickle(decompressed);
-                if (Version != 3) return deserialized;
-                // If this is an RPA-3.0 archive additionally calculate the deobfuscation key.
-                CalculateDeobfuscationKey(splitted);
-                // Deobfuscate archive indicies.
-                deserialized = Deobfuscate(deserialized);
-                return deserialized;
+                using (var stream = new ZlibStream(fs, CompressionMode.Decompress)) {
+                    var decompressed = stream.ReadToEnd();
+                    // Unpickle the decompressed data
+                    var deserialized = parser.Unpickle(decompressed);
+                    if (Version != 3) return deserialized;
+                    // If this is an RPA-3.0 archive additionally calculate the deobfuscation key.
+                    CalculateDeobfuscationKey(splitted);
+                    // Deobfuscate archive indicies.
+                    deserialized = Deobfuscate(deserialized);
+                    return deserialized;
+                }
             }
         }
 
