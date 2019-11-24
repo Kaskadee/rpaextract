@@ -21,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\sharppickle\sharppickle\sharppickle.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
