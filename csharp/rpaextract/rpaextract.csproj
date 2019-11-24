@@ -6,13 +6,13 @@
     <StartupObject>rpaextract.Program</StartupObject>
     <AssemblyName>rpaextract</AssemblyName>
     <RootNamespace>rpaextract</RootNamespace>
-    <AssemblyVersion>0.2.0</AssemblyVersion>
-    <FileVersion>0.2.0</FileVersion>
-    <Copyright>Copyright (c) 2017-2018 Fabian Creutz</Copyright>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <Copyright>Copyright (c) 2017-2019 Fabian Creutz</Copyright>
     <PackageLicenseUrl>https://github.com/Kaskadee/rpaextract/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Kaskadee/rpaextract/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Kaskadee/rpaextract/</RepositoryUrl>
-    <Version>0.2.0</Version>
+    <Version>1.0.0</Version>
     <Description>An application for listing/extracting content from Ren'py archives.</Description>
     <LangVersion>8.0</LangVersion>
 	<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
