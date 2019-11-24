@@ -63,9 +63,7 @@ namespace rpaextract {
         /// <summary>
         ///     Gets the list of files contained in the archive.
         /// </summary>
-        public string[] GetFileList() {
-            return IsValid() ? Indices.Select(x => x.FilePath).OrderBy(x => x).ToArray() : null;
-        }
+        public string[] GetFileList() => IsValid() ? Indices.Select(x => x.FilePath).OrderBy(x => x).ToArray() : null;
 
         /// <summary>
         ///     Reads the specified file from the archive.

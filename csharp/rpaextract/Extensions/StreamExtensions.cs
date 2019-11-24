@@ -32,11 +32,10 @@ namespace rpaextract.Extensions {
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
         public static byte[] ReadToEnd(this Stream stream) {
-            using (var ms = new MemoryStream()) {
-                // Copy contents of stream to memory.
-                stream.CopyTo(ms);
-                return ms.ToArray();
-            }
+            using var ms = new MemoryStream();
+            // Copy contents of stream to memory.
+            stream.CopyTo(ms);
+            return ms.ToArray();
         }
 
         /// <summary>
@@ -45,11 +44,10 @@ namespace rpaextract.Extensions {
         /// <param name="stream">The stream to read from.</param>
         /// <returns>The read data from the specified stream.</returns>
         public static async Task<byte[]> ReadToEndAsync(this Stream stream) {
-            using (var ms = new MemoryStream()) {
-                // Copy contents of stream to memory.
-                await stream.CopyToAsync(ms);
-                return ms.ToArray();
-            }
+            using var ms = new MemoryStream();
+            // Copy contents of stream to memory.
+            await stream.CopyToAsync(ms);
+            return ms.ToArray();
         }
     }
 }
