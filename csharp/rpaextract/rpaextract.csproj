@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <StartupObject>rpaextract.Program</StartupObject>
     <AssemblyName>rpaextract</AssemblyName>
     <RootNamespace>rpaextract</RootNamespace>
@@ -15,6 +15,9 @@
     <Version>0.2.0</Version>
     <Description>An application for listing/extracting content from Ren'py archives.</Description>
     <LangVersion>8.0</LangVersion>
+	<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+	<PublishSingleFile>true</PublishSingleFile>
+	<PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>
