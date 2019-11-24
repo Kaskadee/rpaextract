@@ -216,3 +216,8 @@ FakesAssemblies/
 **/*.Server/GeneratedArtifacts
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
+
+# Build files
+*.exe
+*.zip
+*.sha256sum
