@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using sharppickle;
 
 namespace rpaextract {
     /// <summary>
-    ///     rpaextract - Copyright (c) 2017-2018 Fabian Creutz.
+    ///     rpaextract - Copyright (c) 2017-2019 Fabian Creutz.
     /// </summary>
     internal sealed class Program {
         /// <summary>
