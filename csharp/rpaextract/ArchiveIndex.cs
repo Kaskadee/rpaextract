@@ -1,7 +1,6 @@
-﻿namespace rpaextract
-{
+﻿namespace rpaextract {
     /// <summary>
-    ///     Represents an RPA archive file index deserialized by <see cref="Pickle.PickleParser" />
+    ///     Represents an RPA archive file index deserialized by <see cref="sharppickle.PickleReader" />
     /// </summary>
     internal sealed class ArchiveIndex {
         /// <summary>
@@ -12,12 +11,12 @@
         /// <summary>
         ///     Gets the offset of the beginning of the file.
         /// </summary>
-        public long Offset { get; }
+        public long Offset { get; internal set; }
 
         /// <summary>
         ///     Gets the length of the file in bytes.
         /// </summary>
-        public int Length { get; }
+        public int Length { get; internal set; }
 
         /// <summary>
         ///     Gets the prefix of this file. This seems to be optional and is appended to the beginning of the file data.

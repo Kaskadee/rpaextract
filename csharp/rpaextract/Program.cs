@@ -1,23 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using sharppickle;
 
 namespace rpaextract {
     /// <summary>
     ///     rpaextract - Copyright (c) 2017-2018 Fabian Creutz.
     /// </summary>
     internal sealed class Program {
-        /// <summary>
-        ///     The beginning of the file header for an RPA-2.0 archive.
-        /// </summary>
-        internal const string MagicHeaderVersion2 = "RPA-2.0";
-
-        /// <summary>
-        ///     The beginning of the file header for an RPA-3.0 archive.
-        /// </summary>
-        internal const string MagicHeaderVersion3 = "RPA-3.0";
-
         /// <summary>
         ///     The main entry point for this application.
         /// </summary>

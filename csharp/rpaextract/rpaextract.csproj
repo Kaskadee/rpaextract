@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -14,6 +14,7 @@
     <RepositoryUrl>https://github.com/Kaskadee/rpaextract/</RepositoryUrl>
     <Version>0.2.0</Version>
     <Description>An application for listing/extracting content from Ren'py archives.</Description>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,10 +24,10 @@
   <ItemGroup>
     <ProjectReference Include="..\sharppickle\sharppickle\sharppickle.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <None Update="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>
