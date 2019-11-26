@@ -130,8 +130,7 @@ namespace rpaextract {
             var deobfuscationKey = Version < 3 ? 0 : CalculateDeobfuscationKey(parts);
             fs.Seek(offset, SeekOrigin.Begin);
             using var stream = new ZlibStream(fs, CompressionMode.Decompress);
-            using var parser = new PickleReader(stream.ReadToEnd());
-            var enc = parser.Encoding;
+            using var parser = new PickleReader(stream);
             // Deserialize pickle data and parse the data as archive indices.
             var deserialized = parser.Unpickle();
             var indices = ((Dictionary<object, object>)deserialized[0]).ToDictionary(key => key.Key as string, value => value.Value as ArrayList).Select(pair => {
@@ -139,7 +138,7 @@ namespace rpaextract {
                 var (item1, item2, item3) = value[0] as Tuple<object, object, object> ?? throw new InvalidDataException("Failed to retrieve archive index data from deserialized dictionary.");
                 var indexOffset = Convert.ToInt64(item1);
                 var length = Convert.ToInt32(item2);
-                var prefix = enc.GetBytes((string)item3);
+                var prefix = parser.Encoding.GetBytes((string)item3);
                 return new ArchiveIndex(key, Version < 3 ? indexOffset : indexOffset ^ deobfuscationKey, Version < 3 ? length : length ^ deobfuscationKey, prefix);
             });
 
