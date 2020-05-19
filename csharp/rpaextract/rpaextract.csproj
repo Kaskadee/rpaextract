@@ -1,22 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <StartupObject>rpaextract.Program</StartupObject>
-    <AssemblyName>rpaextract</AssemblyName>
-    <RootNamespace>rpaextract</RootNamespace>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
-    <Copyright>Copyright (c) 2017-2019 Fabian Creutz</Copyright>
-    <PackageLicenseUrl>https://github.com/Kaskadee/rpaextract/blob/master/LICENSE.txt</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/Kaskadee/rpaextract/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Kaskadee/rpaextract/</RepositoryUrl>
-    <Version>1.0.1</Version>
+    <!-- Product Information -->
+    <Product>rpaextract</Product>
     <Description>An application for listing/extracting content from Ren'py archives.</Description>
+    <Company>Fabian Creutz</Company>
+    <Copyright>Copyright © 2017-2020 Fabian Creutz</Copyright>
+    <!-- Assembly Version -->
+    <Version>1.1.0</Version>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
+    <!-- Compiler Properties -->
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>8.0</LangVersion>
-    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
-    <PublishSingleFile>true</PublishSingleFile>
+    <OutputType>Exe</OutputType>
+    <!-- Package Information -->
+    <RepositoryUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/</RepositoryUrl>
+    <PackageLicenseUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/</PackageProjectUrl>
+    <!-- Publish Settings -->
+    <RuntimeIdentifer>win-x64</RuntimeIdentifer>
+    <PublishSingleFile>True</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
