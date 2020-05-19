@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
@@ -45,7 +46,7 @@ namespace rpaextract {
 
             // Check if files should be lists or extracted.
             if (options.ListFiles) {
-                Array.ForEach(archive.GetFileList(), Console.WriteLine);
+                Array.ForEach(archive.GetFiles().ToArray(), Console.WriteLine);
                 return 0;
             } else if (options.ExtractFiles) {
                 // Create output directory at archive location.
@@ -61,7 +62,7 @@ namespace rpaextract {
                 }
 
                 // Iterate through every file index.
-                foreach (var ind in archive.Indices) {
+                foreach (var ind in archive.EnumerateIndices()) {
                     // Read file data from index.
                     var data = await archive.ReadAsync(ind, source.Token);
                     // Combine output directory with internal archive path.

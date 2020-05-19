@@ -21,19 +21,15 @@ using sharppickle;
 
 namespace rpaextract {
     /// <summary>
-    ///     Provides a wrapper to easily access files in an RPA archive. (Ren'Py Archives)
+    ///     Provides class to parse and extract Ren'py archives.
     /// </summary>
     internal sealed class Archive : IDisposable, IAsyncDisposable {
         /// <summary>
-        ///     Gets the RPA archive version.
+        ///     Gets the version of the current Ren'py archive.
         /// </summary>
-        public int Version { get; }
+        public ArchiveVersion Version { get; }
 
-        /// <summary>
-        ///     Gets the list of file indices that are contained in the archive.
-        /// </summary>
-        public ArchiveIndex[] Indices { get; }
-
+        private readonly ArchiveIndex[] _indices;
         private readonly Stream _stream;
 
         /// <summary>
@@ -42,22 +38,33 @@ namespace rpaextract {
         /// <param name="stream">The open stream to read data from.</param>
         /// <param name="version">The version of the archive.</param>
         /// <param name="indices">The file indices of the archive.</param>
-        private Archive(Stream stream, int version, IEnumerable<ArchiveIndex> indices) {
+        private Archive(Stream stream, ArchiveVersion version, IEnumerable<ArchiveIndex> indices) {
             _stream = stream ?? throw new ArgumentNullException(nameof(stream));
             Version = version;
-            if (IsValid())
-                Indices = indices.ToArray();
+            if (IsSupported())
+                _indices = indices.ToArray();
         }
 
         /// <summary>
-        ///     Returns true if the loaded archive is valid.
+        ///     Returns true if the loaded archive is valid and supported.
         /// </summary>
-        public bool IsValid() => Version > 0 && Version <= 3;
+        public bool IsSupported() => Version == ArchiveVersion.RPA2 || Version == ArchiveVersion.RPA3;
 
         /// <summary>
-        ///     Gets the list of files contained in the archive.
+        ///     Gets the list of files in the archive.
         /// </summary>
-        public string[] GetFileList() => IsValid() ? Indices.Select(x => x.FilePath).OrderBy(x => x).ToArray() : null;
+        public IEnumerable<string> GetFiles() {
+            // Check if current archive is valid.
+            if(!IsSupported())
+                throw new NotSupportedException("The archive is not valid or unsupported.");
+            return _indices.Select(x => x.FilePath).OrderBy(x => x);
+        }
+
+        /// <summary>
+        ///     Enumerates the archive indices in the archive.
+        /// </summary>
+        /// <returns>The enumeration of all archive indices as a <seealso cref="ArchiveIndex"/>.</returns>
+        public IEnumerable<ArchiveIndex> EnumerateIndices() => _indices;
 
         /// <summary>
         ///     Reads the specified file from the archive.
@@ -67,11 +74,19 @@ namespace rpaextract {
         /// <returns>The contents of the file as a byte-array</returns>
         [PublicAPI]
         public async Task<byte[]> ReadAsync(ArchiveIndex index, CancellationToken token = default) {
-            // Check if file exists in loaded indices
-            if (index == null || !Indices.Contains(index))
-                throw new FileNotFoundException($"{index?.FilePath} couldn't be found in the archive!");
-            // Read file contents to memory.
+            // Check if cancellation is already requested.
+            token.ThrowIfCancellationRequested();
+            // Validate arguments.
+            if(index == null)
+                throw new ArgumentNullException(nameof(index));
+            if(!IsSupported())
+                throw new NotSupportedException("The archive is not valid or unsupported.");
+            if(!_indices.Contains(index))
+                throw new FileNotFoundException("The specified index is not located in the archive.");
+
+            // Seek to file offset.
             _stream.Seek(index.Offset, SeekOrigin.Begin);
+            // Read file content to memory.
             var length = index.Length - index.Prefix.Length;
             var buffer = ArrayPool<byte>.Shared.Rent(length);
             try {
@@ -114,7 +129,7 @@ namespace rpaextract {
             var parts = header.Split((char)0x20);
             // Seek to the hexadecimal offset and read archive structure.
             var offset = Convert.ToInt32(parts[1], 16);
-            var deobfuscationKey = version < 3 ? 0 : CalculateDeobfuscationKey(parts);
+            var deobfuscationKey = CalculateDeobfuscationKey(version, parts);
             fs.Seek(offset, SeekOrigin.Begin);
             await using var stream = new ZlibStream(fs, CompressionMode.Decompress);
             using var parser = new PickleReader(await stream.ReadToEndAsync(token));
@@ -127,7 +142,7 @@ namespace rpaextract {
                 var indexOffset = Convert.ToInt64(item1);
                 var length = Convert.ToInt32(item2);
                 var prefix = enc.GetBytes((string)item3);
-                return new ArchiveIndex(key, version < 3 ? indexOffset : indexOffset ^ deobfuscationKey, version < 3 ? length : length ^ deobfuscationKey, prefix);
+                return new ArchiveIndex(key, indexOffset ^ deobfuscationKey, length ^ deobfuscationKey, prefix);
             });
 
             return new Archive(fs, version, indices);
@@ -139,26 +154,31 @@ namespace rpaextract {
         /// <param name="stream">The <see cref="Stream"/> to read the archive version from.</param>
         /// <param name="token">The <seealso cref="CancellationToken"/> to cancel the task.</param>
         /// <returns>The archive version.</returns>
-        private static async Task<int> GetArchiveVersionAsync(Stream stream, CancellationToken token = default) {
+        private static async Task<ArchiveVersion> GetArchiveVersionAsync(Stream stream, CancellationToken token = default) {
             // Seek to beginning of stream.
             token.ThrowIfCancellationRequested();
             stream.Seek(0, SeekOrigin.Begin);
             // Read the first seven bytes from the file (this is the archive version)
             var header = await stream.ReadLineAsync(token);
             if (header.StartsWith("RPA-3.0"))
-                return 3;
+                return ArchiveVersion.RPA3;
             if (header.StartsWith("RPA-2.0"))
-                return 2;
+                return ArchiveVersion.RPA2;
             // TODO If the archive isn't version 2.0/3.0 and it's extension is '.rpi' it is probably a version 1.0 archive
             return 0;
         }
 
         /// <summary>
-        ///     Calculates the deobfuscation key for this archive.
+        ///     Calculates the deobfuscation key for the specified archive header.
         /// </summary>
+        /// <param name="version">The ren'py archive version.</param>
         /// <param name="headerParts">The archive header parts.</param>
         /// <returns>The calculated deobfuscation key.</returns>
-        private static int CalculateDeobfuscationKey(IEnumerable<string> headerParts) => headerParts.Skip(2).Aggregate(0, (current, value) => current ^ Convert.ToInt32(value, 16));
+        private static int CalculateDeobfuscationKey(ArchiveVersion version, IEnumerable<string> headerParts) {
+            if(version == ArchiveVersion.RPA3)
+                return headerParts.Skip(2).Aggregate(0, (current, value) => current ^ Convert.ToInt32(value, 16));
+            return 0;
+        }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
