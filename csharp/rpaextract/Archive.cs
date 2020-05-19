@@ -145,7 +145,7 @@ namespace rpaextract {
                 return new ArchiveIndex(key, indexOffset ^ deobfuscationKey, length ^ deobfuscationKey, prefix);
             });
 
-            return new Archive(fs, version, indices);
+            return new Archive(fi.Open(FileMode.Open, FileAccess.Read, FileShare.Read), version, indices);
         }
 
         /// <summary>
