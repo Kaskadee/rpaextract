@@ -1,29 +1,33 @@
-﻿using System.IO;
+using System.Buffers;
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace rpaextract.Extensions {
     /// <summary>
-    ///     Provides methods for extending the <see cref="Stream" /> class and its derivatives.
+    ///     Provides extension methods to simplify retrieving data from a <seealso cref="Stream"/>.
     /// </summary>
     public static class StreamExtensions {
         /// <summary>
-        ///     Reads a string, from the specified stream, that is terminated by a line-break.
+        ///     Reads a string that is terminated by a new-line-character (\n) asynchronously.
         /// </summary>
-        /// <param name="stream">The stream to read the string from.</param>
-        /// <returns>The read string without the line-break at the end of the string.</returns>
+        /// <param name="stream">The <see cref="Stream"/> to read the string from.</param>
+        /// <param name="token">The <seealso cref="CancellationToken"/> to cancel the task.</param>
+        /// <returns>The <see cref="string"/> that was read from the stream.</returns>
         /// <remarks>The position of the stream will be advanced to the point after the line-break character.</remarks>
-        public static string ReadLine(this Stream stream) {
+        public static async Task<string> ReadLineAsync(this Stream stream, CancellationToken token = default) {
+            token.ThrowIfCancellationRequested();
             var sb = new StringBuilder();
-            // Search until line-break is found or end of stream has been reached
-            while (stream.Position < stream.Length) {
-                var newChar = (char) stream.ReadByte();
-                if (newChar == '\n')
+            // Rent memory from pool.
+            using var owner = MemoryPool<byte>.Shared.Rent(1);
+            while (stream.Position != stream.Length) {
+                await stream.ReadAsync(owner.Memory.Slice(0, 1), token);
+                var c = (char) owner.Memory.Span[0];
+                if (c == '\n')
                     return sb.ToString();
-                sb.Append(newChar);
+                sb.Append(c);
             }
-
-            // Reached end of stream and no line-break has been found.
             return sb.ToString();
         }
 
