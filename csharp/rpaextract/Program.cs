@@ -1,66 +1,85 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using CommandLine;
 
 namespace rpaextract {
     /// <summary>
-    ///     rpaextract - Copyright (c) 2017-2019 Fabian Creutz.
+    ///     rpaextract - Copyright (c) 2017-2020 Fabian Creutz.
+    ///     An application for listing/extracting content from Ren'py archives.
     /// </summary>
     internal sealed class Program {
         /// <summary>
-        ///     The main entry point for this application.
+        ///     Defines the entry point of the application.
         /// </summary>
-        /// <param name="args">The array of command-line arguments.</param>
-        private static int Main(string[] args) {
-            // Check for enough arguments.
-            if (!args.Any()) {
-                Console.WriteLine($"(Info) Syntax: {Path.GetFileName(Assembly.GetEntryAssembly().Location)} <archive>");
-                return 1;
-            }
+        /// <param name="args">The command-line arguments passed to the application.</param>
+        /// <returns>The exit code for the current process.</returns>
+        private static async Task<int> Main(string[] args) => await Parser.Default.ParseArguments<Options>(args).MapResult(RunOptions, _ => Task.FromResult(1));
 
-            // Should the files be listed or extracted?
-            var listFiles = args.Contains("--list") || args.Contains("-l");
-            // Get file information about the archive.
-            var fi = new FileInfo(args.Last());
+        /// <summary>
+        ///     Runs the program with the parsed command-line arguments.
+        /// </summary>
+        /// <param name="options">The parsed command-line arguments as an instance of <see cref="Options"/>.</param>
+        /// <returns>The exit code for the current process.</returns>
+        private static async Task<int> RunOptions(Options options) {
+            var source = new CancellationTokenSource();
+            // Check if archive exists.
+            var fi = new FileInfo(options.Path);
             if (!fi.Exists) {
-                Console.Error.WriteLine("(Error) Archive not found.");
+                if (!options.QuietMode)
+                    await Console.Error.WriteLineAsync("(Error) Archive not found.");
                 return 2;
             }
 
-            // Wrap the file information in an archive class and load archive information.
-            var archive = new Archive(fi);
-            if (listFiles) {
-                Array.ForEach(archive.GetFileList(), Console.WriteLine);
-                return 0;
-            }
-
-            // Create output directory at archive location.
-            var directory = fi.DirectoryName;
-            var outputPath = Path.Combine(directory, $"rpaextract_{Path.GetFileNameWithoutExtension(fi.Name)}");
+            // Try to parse file has a Ren'py archive.
+            Archive archive;
             try {
-                if (!Directory.Exists(outputPath))
-                    Directory.CreateDirectory(outputPath);
+                archive = await Archive.LoadAsync(fi, source.Token);
             }
             catch (Exception ex) {
-                Console.WriteLine($"(Error) Couldn't create output directory: {ex.Message}");
-                return ex.HResult;
+                if (!options.QuietMode)
+                    await Console.Error.WriteLineAsync($"(Error) Failed to open archive: {ex.Message}");
+                return 3;
             }
 
-            // Iterate through every file index.
-            foreach (var ind in archive.Indices) {
-                // Read file data from index.
-                var data = archive.Read(ind);
-                // Combine output directory with internal archive path.
-                var path = Path.Combine(outputPath, ind.FilePath);
-                var info = new FileInfo(path);
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(info.DirectoryName);
-                // Write data to disk.
-                File.WriteAllBytes(path, data);
+            // Check if files should be lists or extracted.
+            if (options.ListFiles) {
+                Array.ForEach(archive.GetFileList(), Console.WriteLine);
+                return 0;
+            } else if (options.ExtractFiles) {
+                // Create output directory at archive location.
+                var outputPath = string.IsNullOrWhiteSpace(options.OutputDirectory) ? Path.Combine(fi.DirectoryName, $"rpaextract_{Path.GetFileNameWithoutExtension(fi.Name)}") : options.OutputDirectory;
+                try {
+                    if (!Directory.Exists(outputPath))
+                        Directory.CreateDirectory(outputPath);
+                }
+                catch (Exception ex) {
+                    if (!options.QuietMode)
+                        Console.WriteLine($"(Error) Couldn't create output directory: {ex.Message}");
+                    return ex.HResult;
+                }
+
+                // Iterate through every file index.
+                foreach (var ind in archive.Indices) {
+                    // Read file data from index.
+                    var data = await archive.ReadAsync(ind, source.Token);
+                    // Combine output directory with internal archive path.
+                    var path = Path.Combine(outputPath, ind.FilePath);
+                    var info = new FileInfo(path);
+                    if (!Directory.Exists(path))
+                        Directory.CreateDirectory(info.DirectoryName);
+                    // Write data to disk.
+                    File.WriteAllBytes(path, data);
+                }
+
+                if (!options.QuietMode)
+                    Console.WriteLine("Done.");
+            } else {
+                if (!options.QuietMode)
+                    Console.WriteLine("Unknown option.");
             }
 
-            Console.WriteLine("Done.");
             return 0;
         }
     }
