@@ -23,8 +23,12 @@ namespace rpaextract {
         /// </summary>
         RPA3 = 3,
         /// <summary>
-        ///     RPA-3.2 archive.
+        ///     Unofficial RPA-3.2 archive.
         /// </summary>
-        RPA32 = 4
+        RPA32 = 4,
+        /// <summary>
+        ///     Unofficial RPA-4.0 archive.
+        /// </summary>
+        RPA4 = 5
     }
 }

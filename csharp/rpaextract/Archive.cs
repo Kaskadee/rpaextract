@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Parts of this class were ported from https://github.com/Shizmob/rpatool/ (written in Python) licensed under the "Do What The Fuck You Want To Public License" (WTFPL)
  * https://github.com/Shizmob/rpatool/blob/d0ffa7a/LICENSE
  * - or if unavailable -
@@ -48,7 +48,7 @@ namespace rpaextract {
         /// <summary>
         ///     Returns true if the loaded archive is valid and supported.
         /// </summary>
-        public bool IsSupported() => Version == ArchiveVersion.RPA2 || Version == ArchiveVersion.RPA3 || Version == ArchiveVersion.RPA32;
+        public bool IsSupported() => Version == ArchiveVersion.RPA2 || Version == ArchiveVersion.RPA3 || Version == ArchiveVersion.RPA32 || Version == ArchiveVersion.RPA4;
 
         /// <summary>
         ///     Gets the list of files in the archive.
@@ -160,6 +160,8 @@ namespace rpaextract {
             stream.Seek(0, SeekOrigin.Begin);
             // Read the first seven bytes from the file (this is the archive version)
             var header = await stream.ReadLineAsync(token);
+            if (header.StartsWith("RPA-4.0", StringComparison.OrdinalIgnoreCase))
+                return ArchiveVersion.RPA4;
             if (header.StartsWith("RPA-3.2", StringComparison.OrdinalIgnoreCase))
                 return ArchiveVersion.RPA32;
             if (header.StartsWith("RPA-3.0", StringComparison.OrdinalIgnoreCase))
@@ -180,6 +182,7 @@ namespace rpaextract {
             return version switch {
                 ArchiveVersion.RPA32 => Convert.ToInt32(headerParts[3]),
                 ArchiveVersion.RPA3 => Convert.ToInt32(headerParts[2]),
+                ArchiveVersion.RPA4 => Convert.ToInt32(headerParts[2]),
                 _ => 0
             };
         }
