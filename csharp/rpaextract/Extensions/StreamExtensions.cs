@@ -1,4 +1,4 @@
-using System.Buffers;
+﻿using System.Buffers;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -32,25 +32,15 @@ namespace rpaextract.Extensions {
         }
 
         /// <summary>
-        ///     Reads all bytes until the end of stream, from the current position of the stream, has been reached.
-        /// </summary>
-        /// <param name="stream">The stream to read from.</param>
-        public static byte[] ReadToEnd(this Stream stream) {
-            using var ms = new MemoryStream();
-            // Copy contents of stream to memory.
-            stream.CopyTo(ms);
-            return ms.ToArray();
-        }
-
-        /// <summary>
         ///     Reads all remaining bytes from the specified stream into a byte array.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
+        /// <param name="token">The <seealso cref="CancellationToken"/> to cancel the task.</param>
         /// <returns>The read data from the specified stream.</returns>
-        public static async Task<byte[]> ReadToEndAsync(this Stream stream) {
-            using var ms = new MemoryStream();
+        public static async Task<byte[]> ReadToEndAsync(this Stream stream, CancellationToken token = default) {
+            await using var ms = new MemoryStream();
             // Copy contents of stream to memory.
-            await stream.CopyToAsync(ms);
+            await stream.CopyToAsync(ms, token);
             return ms.ToArray();
         }
     }
