@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Parts of this class were ported from https://github.com/Shizmob/rpatool/ (written in Python) licensed under the "Do What The Fuck You Want To Public License" (WTFPL)
  * https://github.com/Shizmob/rpatool/blob/d0ffa7a/LICENSE
  * - or if unavailable -
@@ -167,7 +167,7 @@ namespace rpaextract {
             if (header.StartsWith("RPA-2.0", StringComparison.OrdinalIgnoreCase))
                 return ArchiveVersion.RPA2;
             // TODO If the archive isn't version 2.0/3.0 and it's extension is '.rpi' it is probably a version 1.0 archive
-            return 0;
+            return ArchiveVersion.Unknown;
         }
 
         /// <summary>
