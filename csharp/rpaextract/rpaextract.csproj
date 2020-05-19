@@ -18,7 +18,7 @@
     <PackageLicenseUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/</PackageProjectUrl>
     <!-- Publish Settings -->
-    <RuntimeIdentifer>win-x64</RuntimeIdentifer>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>True</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
