@@ -118,7 +118,7 @@ namespace rpaextract {
             if (fi.Length < 51)
                 throw new ArgumentOutOfRangeException(nameof(fi), "The file is too small to be a valid archive!");
             // Try to open file in read-only mode.
-            var fs = fi.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
+            await using var fs = fi.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
             // Validate archive version.
             var version = await GetArchiveVersionAsync(fs, token);
             if (version == 0)
