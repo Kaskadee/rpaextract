@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>rpaextract.Program</StartupObject>
     <AssemblyName>rpaextract</AssemblyName>
     <RootNamespace>rpaextract</RootNamespace>
