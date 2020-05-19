@@ -176,10 +176,10 @@ namespace rpaextract {
         /// <param name="version">The ren'py archive version.</param>
         /// <param name="headerParts">The archive header parts.</param>
         /// <returns>The calculated deobfuscation key.</returns>
-        private static int CalculateDeobfuscationKey(ArchiveVersion version, IEnumerable<string> headerParts) {
+        private static int CalculateDeobfuscationKey(ArchiveVersion version, IReadOnlyList<string> headerParts) {
             return version switch {
-                ArchiveVersion.RPA32 => headerParts.Skip(3).Aggregate(0, (current, value) => current ^ Convert.ToInt32(value, 16)),
-                ArchiveVersion.RPA3 => headerParts.Skip(2).Aggregate(0, (current, value) => current ^ Convert.ToInt32(value, 16)),
+                ArchiveVersion.RPA32 => Convert.ToInt32(headerParts[3]),
+                ArchiveVersion.RPA3 => Convert.ToInt32(headerParts[2]),
                 _ => 0
             };
         }
