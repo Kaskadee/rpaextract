@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!-- Product Information -->
     <Product>rpaextract</Product>
@@ -17,10 +17,6 @@
     <RepositoryUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/</RepositoryUrl>
     <PackageLicenseUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/</PackageProjectUrl>
-    <!-- Publish Settings -->
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishSingleFile>True</PublishSingleFile>
-    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>
