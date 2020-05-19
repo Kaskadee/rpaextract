@@ -180,9 +180,9 @@ namespace rpaextract {
         /// <returns>The calculated deobfuscation key.</returns>
         private static int CalculateDeobfuscationKey(ArchiveVersion version, IReadOnlyList<string> headerParts) {
             return version switch {
-                ArchiveVersion.RPA32 => Convert.ToInt32(headerParts[3]),
-                ArchiveVersion.RPA3 => Convert.ToInt32(headerParts[2]),
-                ArchiveVersion.RPA4 => Convert.ToInt32(headerParts[2]),
+                ArchiveVersion.RPA32 => Convert.ToInt32(headerParts[3], 16),
+                ArchiveVersion.RPA3 => Convert.ToInt32(headerParts[2], 16),
+                ArchiveVersion.RPA4 => Convert.ToInt32(headerParts[2], 16),
                 _ => 0
             };
         }
