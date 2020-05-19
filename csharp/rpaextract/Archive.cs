@@ -48,7 +48,7 @@ namespace rpaextract {
         /// <summary>
         ///     Returns true if the loaded archive is valid and supported.
         /// </summary>
-        public bool IsSupported() => Version == ArchiveVersion.RPA2 || Version == ArchiveVersion.RPA3;
+        public bool IsSupported() => Version == ArchiveVersion.RPA2 || Version == ArchiveVersion.RPA3 || Version == ArchiveVersion.RPA32;
 
         /// <summary>
         ///     Gets the list of files in the archive.
@@ -160,9 +160,11 @@ namespace rpaextract {
             stream.Seek(0, SeekOrigin.Begin);
             // Read the first seven bytes from the file (this is the archive version)
             var header = await stream.ReadLineAsync(token);
-            if (header.StartsWith("RPA-3.0"))
+            if (header.StartsWith("RPA-3.2", StringComparison.OrdinalIgnoreCase))
+                return ArchiveVersion.RPA32;
+            if (header.StartsWith("RPA-3.0", StringComparison.OrdinalIgnoreCase))
                 return ArchiveVersion.RPA3;
-            if (header.StartsWith("RPA-2.0"))
+            if (header.StartsWith("RPA-2.0", StringComparison.OrdinalIgnoreCase))
                 return ArchiveVersion.RPA2;
             // TODO If the archive isn't version 2.0/3.0 and it's extension is '.rpi' it is probably a version 1.0 archive
             return 0;
@@ -175,9 +177,11 @@ namespace rpaextract {
         /// <param name="headerParts">The archive header parts.</param>
         /// <returns>The calculated deobfuscation key.</returns>
         private static int CalculateDeobfuscationKey(ArchiveVersion version, IEnumerable<string> headerParts) {
-            if(version == ArchiveVersion.RPA3)
-                return headerParts.Skip(2).Aggregate(0, (current, value) => current ^ Convert.ToInt32(value, 16));
-            return 0;
+            return version switch {
+                ArchiveVersion.RPA32 => headerParts.Skip(3).Aggregate(0, (current, value) => current ^ Convert.ToInt32(value, 16)),
+                ArchiveVersion.RPA3 => headerParts.Skip(2).Aggregate(0, (current, value) => current ^ Convert.ToInt32(value, 16)),
+                _ => 0
+            };
         }
 
         /// <summary>
