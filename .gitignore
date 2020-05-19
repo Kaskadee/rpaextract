@@ -221,3 +221,6 @@ _Pvt_Extensions
 *.exe
 *.zip
 *.sha256sum
+
+# Example files
+example/
