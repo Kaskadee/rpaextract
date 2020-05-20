@@ -20,7 +20,14 @@ Copyright © 2017-2020 Fabian Creutz
 
   --version        Display version information.
 ```
+## Sample archive
+A sample RPA-3.0 ren'py archive can be found in the [sample](https://git.kaskadee.eu/Kaskadee/rpaextract/src/branch/master/sample ) directory.
+It contains a single .png file to test the functionality of rpaextract.
 ## Dependencies
 - [.NET Core 3.1](https://www.microsoft.com/net/download/core )
+- [sharppickle](https://git.kaskadee.eu/Kaskadee/sharppickle ) (pickle deserialization)
 - [SharpCompress](https://github.com/adamhathcock/sharpcompress ) (zlib decompression / provided by NuGet)
 - [CommandLineParser](https://github.com/commandlineparser/commandline ) (command-line argument handling / provided by NuGet)
+
+## License
+rpaextract is licensed under the [European Union Public Licence v1.2](https://git.kaskadee.eu/Kaskadee/rpaextract/src/branch/master/LICENSE )
