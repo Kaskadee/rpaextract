@@ -9,7 +9,7 @@ namespace rpaextract {
         ///     Gets or sets the path of the RPA archive to extract.
         /// </summary>
         [Option('f', "archive", Required = true, HelpText = "Sets the path to the RPA archive to extract.")]
-        public string Path { get; set; }
+        public string? Path { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether list all files or not.
@@ -27,7 +27,7 @@ namespace rpaextract {
         ///     Gets or sets the output directory.
         /// </summary>
         [Option('o', "output", HelpText = "Sets the directory to extract the files to (only works with -x).", SetName = "Extract")]
-        public string OutputDirectory { get; set; }
+        public string? OutputDirectory { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether console output should be suppressed or not.

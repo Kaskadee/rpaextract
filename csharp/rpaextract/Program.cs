@@ -24,33 +24,34 @@ namespace rpaextract {
         /// <param name="options">The parsed command-line arguments as an instance of <see cref="Options"/>.</param>
         /// <returns>The exit code for the current process.</returns>
         private static async Task<int> RunOptions(Options options) {
-            var source = new CancellationTokenSource();
-            // Check if archive exists.
-            var fi = new FileInfo(options.Path);
-            if (!fi.Exists) {
+            CancellationTokenSource source = new();
+            var archivePath = options.Path;
+            if (archivePath is null || !File.Exists(archivePath)) {
                 if (!options.QuietMode)
                     await Console.Error.WriteLineAsync("(Error) Archive not found.");
                 return 2;
             }
 
-            // Try to parse file has a Ren'py archive.
+            FileInfo fi = new(archivePath);
             Archive archive;
             try {
                 archive = await Archive.LoadAsync(fi, source.Token);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 if (!options.QuietMode)
                     await Console.Error.WriteLineAsync($"(Error) Failed to open archive: {ex.Message}");
                 return 3;
             }
 
-            // Check if files should be lists or extracted.
+            // Check if files should be listed or extracted.
             if (options.ListFiles) {
                 Array.ForEach(archive.GetFiles().ToArray(), Console.WriteLine);
                 return 0;
-            } else if (options.ExtractFiles) {
+            }
+
+            if (options.ExtractFiles) {
                 // Create output directory at archive location.
-                var outputPath = string.IsNullOrWhiteSpace(options.OutputDirectory) ? Path.Combine(fi.DirectoryName, $"rpaextract_{Path.GetFileNameWithoutExtension(fi.Name)}") : options.OutputDirectory;
+                var directoryName = fi.DirectoryName ?? throw new ArgumentException("Cannot get diretory name.");
+                var outputPath = string.IsNullOrWhiteSpace(options.OutputDirectory) ? Path.Combine(directoryName, $"rpaextract_{Path.GetFileNameWithoutExtension(fi.Name)}") : options.OutputDirectory;
                 try {
                     if (!Directory.Exists(outputPath))
                         Directory.CreateDirectory(outputPath);
@@ -69,9 +70,9 @@ namespace rpaextract {
                     var path = Path.Combine(outputPath, ind.FilePath);
                     var info = new FileInfo(path);
                     if (!Directory.Exists(path))
-                        Directory.CreateDirectory(info.DirectoryName);
+                        Directory.CreateDirectory(info.DirectoryName ?? throw new ArgumentException("Cannot get diretory name."));
                     // Write data to disk.
-                    File.WriteAllBytes(path, data);
+                    await File.WriteAllBytesAsync(path, data, source.Token);
                 }
 
                 if (!options.QuietMode)
