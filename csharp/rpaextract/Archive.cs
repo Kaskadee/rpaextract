@@ -161,8 +161,8 @@ namespace rpaextract {
             token.ThrowIfCancellationRequested();
             stream.Seek(0, SeekOrigin.Begin);
             // Read file header to determine archive version.
-            var header = await stream.ReadLineAsync(token);
-            return header.ToLowerInvariant() switch {
+            var header = (await stream.ReadLineAsync(token)).Split(' ').First().ToUpperInvariant();
+            return header switch {
                 "RPA-4.0" => ArchiveVersion.RPA4,
                 "RPA-3.2" => ArchiveVersion.RPA32,
                 "RPA-3.0" => ArchiveVersion.RPA3,
