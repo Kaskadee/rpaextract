@@ -10,14 +10,20 @@
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <!-- Compiler Properties -->
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <LangVersion>8.0</LangVersion>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
     <OutputType>Exe</OutputType>
+    <nullable>enable</nullable>
     <!-- Package Information -->
     <RepositoryUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/</RepositoryUrl>
     <PackageLicenseUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/</PackageProjectUrl>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="publish\**" />
+    <EmbeddedResource Remove="publish\**" />
+    <None Remove="publish\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
