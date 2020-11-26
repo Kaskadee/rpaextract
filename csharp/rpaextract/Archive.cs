@@ -90,7 +90,7 @@ namespace rpaextract {
             var length = index.Length - index.Prefix.Length;
             var buffer = ArrayPool<byte>.Shared.Rent(length);
             try {
-                var bytesRead = await _stream.ReadAsync(buffer, token);
+                var bytesRead = await _stream.ReadAsync(buffer, 0, length, token);
                 if (bytesRead != length)
                     throw new InvalidDataException("Less data read than expected.");
                 var data = new byte[index.Length + index.Prefix.Length];
