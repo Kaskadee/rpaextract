@@ -4,14 +4,14 @@
     <Product>rpaextract</Product>
     <Description>An application for listing/extracting content from Ren'py archives.</Description>
     <Company>Fabian Creutz</Company>
-    <Copyright>Copyright © 2017-2020 Fabian Creutz</Copyright>
+    <Copyright>Copyright © 2017-2022 Fabian Creutz</Copyright>
     <!-- Assembly Version -->
     <Version>1.2.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <!-- Compiler Properties -->
-    <TargetFramework>net5.0</TargetFramework>
-    <LangVersion>9.0</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
     <OutputType>Exe</OutputType>
     <nullable>enable</nullable>
     <!-- Package Information -->
@@ -27,8 +27,8 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
-    <PackageReference Include="SharpCompress" Version="0.26.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
+    <PackageReference Include="SharpCompress" Version="0.31.0" />
   </ItemGroup>
 
   <ItemGroup>

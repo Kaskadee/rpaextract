@@ -29,6 +29,7 @@ namespace rpaextract {
         /// <summary>
         ///     Unofficial RPA-4.0 archive.
         /// </summary>
-        RPA4 = 5
+        RPA4 = 5,
+
     }
 }
