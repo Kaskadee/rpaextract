@@ -27,5 +27,9 @@ public enum ArchiveVersion {
     /// <summary>
     ///     Unofficial RPA-4.0 archive.
     /// </summary>
-    RPA4 = 5
+    RPA4 = 5,
+    /// <summary>
+    ///     Unoffical custom Ren'py archive with encryption (currently only seen in one game).
+    /// </summary>
+    YVANeusEX = 100,
 }

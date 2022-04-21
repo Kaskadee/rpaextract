@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using rpaextract.Custom;
 using rpaextract.Extensions;
 using SharpCompress.Compressors;
 using SharpCompress.Compressors.Deflate;
@@ -120,8 +121,8 @@ internal sealed class Archive : IDisposable, IAsyncDisposable {
         await using FileStream fs = fi.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
         // Validate archive version.
         ArchiveVersion version = await GetArchiveVersionAsync(fs, token);
-        if (version == 0)
-            return new(fs, 0, null);
+        if (version is ArchiveVersion.Unknown)
+            return new(fs, ArchiveVersion.Unknown, null);
         // Parse archive header.
         fs.Seek(0, SeekOrigin.Begin);
         var header = await fs.ReadLineAsync(token);
@@ -147,7 +148,7 @@ internal sealed class Archive : IDisposable, IAsyncDisposable {
             return new ArchiveIndex(key, indexOffset ^ deobfuscationKey, length ^ deobfuscationKey, prefix);
         });
 
-        return new Archive(fi.Open(FileMode.Open, FileAccess.Read, FileShare.Read), version, indices);
+        return new(fi.Open(FileMode.Open, FileAccess.Read, FileShare.Read), version, indices);
     }
 
     /// <summary>
@@ -159,7 +160,17 @@ internal sealed class Archive : IDisposable, IAsyncDisposable {
     private static async Task<ArchiveVersion> GetArchiveVersionAsync(Stream stream, CancellationToken token = default) {
         token.ThrowIfCancellationRequested();
         stream.Seek(0, SeekOrigin.Begin);
-        // Read file header to determine archive version.
+        // Check for unoffical custom archives.
+        IMemoryOwner<byte> owner = MemoryPool<byte>.Shared.Rent(6);
+        try {
+            Memory<byte> headerBuffer = owner.Memory;
+            await stream.ReadAsync(headerBuffer[..6], token);
+            if (headerBuffer.Span.SequenceEqual(YVANeusEX.SupportedHeader.AsSpan()))
+                return ArchiveVersion.YVANeusEX;
+        } finally {
+            owner.Dispose();
+        }
+        // Read file header to determine offical (or modified) archive version.
         var header = (await stream.ReadLineAsync(token)).Split(' ').First().ToUpperInvariant();
         return header switch {
             "RPA-4.0" => ArchiveVersion.RPA4,
