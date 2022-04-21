@@ -7,7 +7,7 @@ using CommandLine;
 
 namespace rpaextract {
     /// <summary>
-    ///     rpaextract - Copyright (c) 2017-2020 Fabian Creutz.
+    ///     rpaextract - Copyright (c) 2017-2022 Fabian Creutz.
     ///     An application for listing/extracting content from Ren'py archives.
     /// </summary>
     internal sealed class Program {
@@ -63,7 +63,7 @@ namespace rpaextract {
                 }
 
                 // Iterate through every file index.
-                foreach (var ind in archive.EnumerateIndices()) {
+                foreach (ArchiveIndex ind in archive.EnumerateIndices()) {
                     // Read file data from index.
                     var data = await archive.ReadAsync(ind, source.Token);
                     // Combine output directory with internal archive path.

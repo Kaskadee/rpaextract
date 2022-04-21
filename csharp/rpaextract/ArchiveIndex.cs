@@ -31,10 +31,10 @@
         /// <param name="length">The length of the file in bytes.</param>
         /// <param name="prefix">The prefix data of this file.</param>
         public ArchiveIndex(string path, long offset, int length, byte[] prefix) {
-            FilePath = path;
-            Offset = offset;
-            Length = length;
-            Prefix = prefix;
+            this.FilePath = path;
+            this.Offset = offset;
+            this.Length = length;
+            this.Prefix = prefix;
         }
     }
 }

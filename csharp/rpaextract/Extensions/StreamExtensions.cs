@@ -20,7 +20,7 @@ namespace rpaextract.Extensions {
             token.ThrowIfCancellationRequested();
             var sb = new StringBuilder();
             // Rent memory from pool.
-            using var owner = MemoryPool<byte>.Shared.Rent(1);
+            using IMemoryOwner<byte>? owner = MemoryPool<byte>.Shared.Rent(1);
             while (stream.Position != stream.Length) {
                 await stream.ReadAsync(owner.Memory.Slice(0, 1), token);
                 var c = (char) owner.Memory.Span[0];
