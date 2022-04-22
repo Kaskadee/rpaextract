@@ -114,19 +114,8 @@ public sealed class YVANeusEXArchiveReader : ArchiveReader {
         foreach ((string fileName, long offset, int size, uint checksum, ReadOnlyMemory<byte> prefix) t in result) {
             (var fileName, var _, var size, var checksum, ReadOnlyMemory<byte> prefix) = t;
             var currentOffset = dataOffset;
-            // Compute and validate checksum if archive metainformation has checksums.
-            if (this.hasChecksum) {
-                this.stream.Seek(currentOffset, SeekOrigin.Begin);
-                Memory<byte> buffer = ArrayPool<byte>.Shared.Rent(size);
-                var bytesRead = await this.stream.ReadAsync(buffer[..size], token);
-                if (bytesRead != size)
-                    throw new InvalidDataException($"Content size mismatch (expected: {size}, got: {bytesRead})");
-                var actualChecksum = this.ComputeChecksum(buffer[..size].Span);
-                if (checksum != actualChecksum)
-                    throw new InvalidDataException($"Content checksum mismatch (expected: {checksum}, got: {actualChecksum})");
-            }
             dataOffset += size;
-            this.archiveIndices.Add(new(fileName, currentOffset, size, prefix));
+            this.archiveIndices.Add(new(fileName, currentOffset, size, prefix) { Checksum = checksum });
         }
         this.isLoaded = true;
     }
@@ -152,6 +141,13 @@ public sealed class YVANeusEXArchiveReader : ArchiveReader {
         var readBytes = await this.stream.ReadAsync(content, token);
         if (readBytes != content.Length)
             throw new InvalidDataException($"Content size mismatch (expected: {content.Length}, got: {readBytes})");
+        // Compute and validate checksum if archive metainformation has checksums.
+        if (this.hasChecksum) {
+            var actualChecksum = this.ComputeChecksum(content.Span);
+            if (index.Checksum != actualChecksum)
+                throw new InvalidDataException($"Content checksum mismatch (expected: {index.Checksum}, got: {actualChecksum})");
+        }
+
         if(this.isEncrypted)
             this.Decrypt(content.Span, this.encryptionKey);
         return this.isCompressed ? this.Decompress(content) : content;
@@ -174,7 +170,9 @@ public sealed class YVANeusEXArchiveReader : ArchiveReader {
         // Read file header and compare it to the supported header.
         using IMemoryOwner<byte> owner = MemoryPool<byte>.Shared.Rent(6);
         Memory<byte> buffer = owner.Memory[..6];
-        await this.stream.ReadAsync(buffer, token);
+        var readBytes = await this.stream.ReadAsync(buffer, token);
+        if (readBytes != buffer.Length)
+            throw new InvalidDataException($"Failed to read enough bytes to read archive version.");
         this.archiveVersion = buffer.Span.SequenceEqual(SupportedHeader.AsSpan()) ? ArchiveVersion.YVANeusEX : ArchiveVersion.Unknown;
         // Seek back to old offset.
         this.stream.Seek(currentOffset, SeekOrigin.Begin);

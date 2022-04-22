@@ -3,7 +3,7 @@
 namespace rpaextract;
 
 /// <summary>
-/// Represents an archive entry deserialized by an implemention of the <see cref="Custom.IArchiveReader"/> interface.
+/// Represents an archive entry deserialized by an implemention of the <see cref="API.ArchiveReader"/> interface.
 /// </summary>
 public sealed class ArchiveIndex {
     /// <summary>
@@ -15,6 +15,11 @@ public sealed class ArchiveIndex {
     /// Gets the offset of the beginning of the file.
     /// </summary>
     public long Offset { get; internal set; }
+    
+    /// <summary>
+    /// Gets the checksum of the file.
+    /// </summary>
+    public uint Checksum { get; set; }
 
     /// <summary>
     /// Gets the length of the file in bytes.
