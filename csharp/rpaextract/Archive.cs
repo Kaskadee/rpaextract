@@ -20,7 +20,7 @@ using SharpCompress.Compressors;
 using SharpCompress.Compressors.Deflate;
 using sharppickle;
 
-namespace rpaextract; 
+namespace rpaextract;
 
 /// <summary>
 ///     Provides class to parse and extract Ren'py archives.
@@ -43,7 +43,7 @@ internal sealed class Archive : IDisposable, IAsyncDisposable {
     private Archive(Stream stream, ArchiveVersion version, IEnumerable<ArchiveIndex>? indices) {
         this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
         this.Version = version;
-        if (this.IsSupported()) 
+        if (this.IsSupported())
             this.indices = indices?.ToArray() ?? null;
     }
 
@@ -77,11 +77,11 @@ internal sealed class Archive : IDisposable, IAsyncDisposable {
         // Check if cancellation is already requested.
         token.ThrowIfCancellationRequested();
         // Validate arguments.
-        if(index == null)
+        if (index == null)
             throw new ArgumentNullException(nameof(index));
-        if(!this.IsSupported() || this.indices is null)
+        if (!this.IsSupported() || this.indices is null)
             throw new NotSupportedException("The archive is not valid or unsupported.");
-        if(!this.indices.Contains(index))
+        if (!this.indices.Contains(index))
             throw new FileNotFoundException("The specified index is not located in the archive.");
 
         // Seek to file offset.
@@ -139,7 +139,7 @@ internal sealed class Archive : IDisposable, IAsyncDisposable {
         Dictionary<object, object?> rawDict = deserialized.First() as Dictionary<object, object?> ?? throw new InvalidDataException("Failed to get dictionary of archive indices!");
         IEnumerable<ArchiveIndex> indices = rawDict.ToDictionary(pair => (pair.Key as string)!, pair => pair.Value as List<object?>).Select(pair => {
             pair.Deconstruct(out var key, out List<object?>? value);
-            if(value is null)
+            if (value is null)
                 throw new InvalidDataException("Value must not be null!");
             var (item1, item2, item3) = value.First() as Tuple<object?, object?, object?> ?? throw new InvalidDataException("Failed to retrieve archive index data from deserialized dictionary.");
             var indexOffset = Convert.ToInt64(item1);
@@ -161,15 +161,11 @@ internal sealed class Archive : IDisposable, IAsyncDisposable {
         token.ThrowIfCancellationRequested();
         stream.Seek(0, SeekOrigin.Begin);
         // Check for unoffical custom archives.
-        IMemoryOwner<byte> owner = MemoryPool<byte>.Shared.Rent(6);
-        try {
-            Memory<byte> headerBuffer = owner.Memory;
-            await stream.ReadAsync(headerBuffer[..6], token);
-            if (headerBuffer.Span.SequenceEqual(YVANeusEX.SupportedHeader.AsSpan()))
-                return ArchiveVersion.YVANeusEX;
-        } finally {
-            owner.Dispose();
-        }
+        using IMemoryOwner<byte> owner = MemoryPool<byte>.Shared.Rent(6);
+        Memory<byte> headerBuffer = owner.Memory;
+        await stream.ReadAsync(headerBuffer[..6], token);
+        if (headerBuffer.Span[..6].SequenceEqual(YVANeusEX.SupportedHeader.AsSpan()))
+            return ArchiveVersion.YVANeusEX;
         // Read file header to determine offical (or modified) archive version.
         var header = (await stream.ReadLineAsync(token)).Split(' ').First().ToUpperInvariant();
         return header switch {

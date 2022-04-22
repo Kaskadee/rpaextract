@@ -1,4 +1,4 @@
-﻿namespace rpaextract; 
+﻿namespace rpaextract;
 
 /// <summary>
 ///     Provides an enumeration of all possible Ren'py archive version that are known in this version.
