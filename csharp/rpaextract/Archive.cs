@@ -78,6 +78,7 @@ internal sealed class Archive : IDisposable {
         if (fi.Length < 51)
             throw new ArgumentOutOfRangeException(nameof(fi), "The file is too small to be a valid archive!");
         foreach (Type archiveReaderType in loadedArchiveReaders) {
+            Console.WriteLine($"(Info) Trying to parse archive using {archiveReaderType}...");
             // Try to create new instance of archive reader type.
             if (Activator.CreateInstance(archiveReaderType, fi) is not ArchiveReader reader) {
                 Console.WriteLine($"(Error) Failed to create instance of {archiveReaderType}.");
@@ -92,7 +93,7 @@ internal sealed class Archive : IDisposable {
             }
             return new(reader, await reader.GetArchiveVersionAsync(token));
         }
-        throw new NotSupportedException($"No registered reader is able to parse the specified archive.");
+        throw new NotSupportedException("No registered reader is able to parse the specified archive.");
     }
 
     /// <summary>
