@@ -29,7 +29,6 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
-    <PackageReference Include="SharpCompress" Version="0.31.0" />
   </ItemGroup>
 
   <ItemGroup>
