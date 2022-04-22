@@ -65,14 +65,15 @@ internal sealed class Program {
             // Iterate through every file index.
             foreach (ArchiveIndex ind in archive.EnumerateIndices()) {
                 // Read file data from index.
-                var data = await archive.ReadAsync(ind, source.Token);
+                ReadOnlyMemory<byte> data = await archive.ReadAsync(ind, source.Token);
                 // Combine output directory with internal archive path.
                 var path = Path.Combine(outputPath, ind.FilePath);
                 var info = new FileInfo(path);
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(info.DirectoryName ?? throw new ArgumentException("Cannot get directory name."));
                 // Write data to disk.
-                await File.WriteAllBytesAsync(path, data, source.Token);
+                await using FileStream fs = new(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+                await fs.WriteAsync(data, source.Token);
             }
 
             if (!options.QuietMode)
