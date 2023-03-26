@@ -1,3 +1,6 @@
 [submodule "csharp/sharppickle"]
 	path = csharp/sharppickle
 	url = https://git.kaskadee.eu/Kaskadee/sharppickle.git
+[submodule "src/sharppickle"]
+	path = src/sharppickle
+	url = https://git.kaskadee.eu/Kaskadee/sharppickle.git
