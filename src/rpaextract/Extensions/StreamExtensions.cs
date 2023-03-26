@@ -22,7 +22,9 @@ namespace rpaextract.Extensions {
             // Rent memory from pool.
             using IMemoryOwner<byte> owner = MemoryPool<byte>.Shared.Rent(1);
             while (stream.Position != stream.Length) {
-                await stream.ReadAsync(owner.Memory[..1], token);
+                var n = await stream.ReadAsync(owner.Memory[..1], token);
+                if (n != 1)
+                    break;
                 var c = (char)owner.Memory.Span[0];
                 if (c == '\n')
                     return sb.ToString();
