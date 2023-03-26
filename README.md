@@ -1,7 +1,7 @@
 # rpaextract
 
 An application for listing/extracting content from Ren'py archives. Written in C# 10 / .NET 6.0
-Utilizes [sharppickle](https://git.kaskadee.eu/Kaskadee/sharppickle ) to parse python's pickle format.
+Utilizes [sharppickle](https://github.com/Kaskadee/sharppickle ) to parse python's pickle format.
 
 ## Usage
 
@@ -26,7 +26,7 @@ Copyright © 2017-2023 Fabian Creutz
 
 ## Sample archive
 
-A sample RPA-3.0 ren'py archive can be found in the [sample](https://github.com/Kaskadee/rpaextract/src/branch/master/sample ) directory.
+A sample RPA-3.0 ren'py archive can be found in the [sample](https://github.com/Kaskadee/rpaextract/blob/master/sample ) directory.
 It contains a single .png file to test the functionality of rpaextract.
 
 ## Dependencies
@@ -37,4 +37,4 @@ It contains a single .png file to test the functionality of rpaextract.
 
 ## License
 
-rpaextract is licensed under the [European Union Public Licence v1.2](https://github.com/Kaskadee/rpaextract/src/branch/master/LICENSE )
+rpaextract is licensed under the [European Union Public Licence v1.2](https://github.com/Kaskadee/rpaextract/blob/master/LICENSE )
