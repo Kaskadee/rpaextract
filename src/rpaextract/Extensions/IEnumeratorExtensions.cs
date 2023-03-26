@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace rpaextract.Extensions;
 
@@ -12,6 +13,7 @@ public static class IEnumeratorExtensions {
     /// <typeparam name="T">The type of the source array.</typeparam>
     /// <param name="source">The source array to repeat indefinitely.</param>
     /// <returns>The <see cref="IEnumerator{T}"/> which cycles through the source array indefinitely.</returns>
+    [SuppressMessage("ReSharper", "IteratorNeverReturns")]
     public static IEnumerator<T> Cycle<T>(this T[] source) {
         while (true) {
             foreach (T e in source)
