@@ -1,3 +1,3 @@
 [submodule "src/sharppickle"]
 	path = src/sharppickle
-	url = https://git.kaskadee.eu/Kaskadee/sharppickle.git
+	url = https://github.com/Kaskadee/sharppickle.git
