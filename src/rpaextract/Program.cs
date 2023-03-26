@@ -22,7 +22,7 @@ internal sealed class Program {
     /// <summary>
     ///     Runs the program with the parsed command-line arguments.
     /// </summary>
-    /// <param name="options">The parsed command-line arguments as an instance of <see cref="Options"/>.</param>
+    /// <param name="options">The parsed command-line arguments as an instance of <see cref="Options" />.</param>
     /// <returns>The exit code for the current process.</returns>
     private static async Task<int> RunOptions(Options options) {
         CancellationTokenSource source = new();

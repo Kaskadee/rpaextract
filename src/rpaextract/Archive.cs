@@ -16,21 +16,27 @@ using rpaextract.API;
 namespace rpaextract;
 
 /// <summary>
-/// Provides class to parse and extract Ren'py archives.
+///     Provides class to parse and extract Ren'py archives.
 /// </summary>
 internal sealed class Archive : IDisposable {
+    private static readonly Type[] loadedArchiveReaders = { typeof(RenpyArchiveReader), typeof(YVANeusEXArchiveReader) };
+
+    /// <summary>
+    ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose() => this.archiveReader.Dispose();
+
     /// <summary>
     ///     Gets the version of the current Ren'py archive.
     /// </summary>
     public ArchiveVersion Version { get; }
 
-    private static readonly Type[] loadedArchiveReaders = { typeof(RenpyArchiveReader), typeof(YVANeusEXArchiveReader) };
     private readonly ArchiveReader archiveReader;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Archive"/> class.
+    ///     Initializes a new instance of the <see cref="Archive" /> class.
     /// </summary>
-    /// <param name="reader">The implementation of the <see cref="archiveReader"/> class which is able to read the archive.</param>
+    /// <param name="reader">The implementation of the <see cref="archiveReader" /> class which is able to read the archive.</param>
     /// <param name="version">The version of the archive.</param>
     private Archive(ArchiveReader reader, ArchiveVersion version) {
         this.archiveReader = reader ?? throw new ArgumentNullException(nameof(reader));
@@ -38,36 +44,36 @@ internal sealed class Archive : IDisposable {
     }
 
     /// <summary>
-    /// Returns true if the loaded archive is valid and supported.
+    ///     Returns true if the loaded archive is valid and supported.
     /// </summary>
     public bool IsSupported() => this.archiveReader.IsSupported();
 
     /// <summary>
-    /// Gets the list of files in the archive.
+    ///     Gets the list of files in the archive.
     /// </summary>
     public IEnumerable<string> GetFiles() => this.archiveReader.GetFiles();
 
     /// <summary>
-    /// Enumerates the archive indices in the archive.
+    ///     Enumerates the archive indices in the archive.
     /// </summary>
-    /// <returns>The enumeration of all archive indices as a <seealso cref="ArchiveIndex"/>.</returns>
+    /// <returns>The enumeration of all archive indices as a <seealso cref="ArchiveIndex" />.</returns>
     public IEnumerable<ArchiveIndex> EnumerateIndices() => this.archiveReader.EnumerateIndices();
 
     /// <summary>
-    /// Reads the specified file from the archive.
+    ///     Reads the specified file from the archive.
     /// </summary>
     /// <param name="index">The archive index of the file to read from.</param>
-    /// <param name="token">The <seealso cref="CancellationToken"/> to cancel the task.</param>
+    /// <param name="token">The <seealso cref="CancellationToken" /> to cancel the task.</param>
     /// <returns>The contents of the file as a byte-array</returns>
     [PublicAPI]
     public async Task<ReadOnlyMemory<byte>> ReadAsync(ArchiveIndex index, CancellationToken token = default) => await this.archiveReader.ReadAsync(index, token);
 
     /// <summary>
-    /// Loads the Ren'py archive from the specified file asynchronously.
+    ///     Loads the Ren'py archive from the specified file asynchronously.
     /// </summary>
-    /// <param name="fi">The <see cref="FileInfo"/> of the Ren'py archive to load.</param>
-    /// <param name="token">The <seealso cref="CancellationToken"/> to cancel the task.</param>
-    /// <returns>The parsed Ren'py archive as an instance of <see cref="Archive"/>.</returns>
+    /// <param name="fi">The <see cref="FileInfo" /> of the Ren'py archive to load.</param>
+    /// <param name="token">The <seealso cref="CancellationToken" /> to cancel the task.</param>
+    /// <returns>The parsed Ren'py archive as an instance of <see cref="Archive" />.</returns>
     [PublicAPI]
     public static async Task<Archive> LoadAsync(FileInfo fi, CancellationToken token = default) {
         // Validate arguments and file.
@@ -84,6 +90,7 @@ internal sealed class Archive : IDisposable {
                 Console.WriteLine($"(Error) Failed to create instance of {archiveReaderType}.");
                 continue;
             }
+
             // Check if the archive reader is able to parse the archive.
             await reader.LoadAsync(token);
             if (!reader.IsSupported()) {
@@ -91,13 +98,10 @@ internal sealed class Archive : IDisposable {
                 Console.WriteLine($"(Error) {archiveReaderType.FullName} is not able to parse the specified archive.");
                 continue;
             }
+
             return new(reader, await reader.GetArchiveVersionAsync(token));
         }
+
         throw new NotSupportedException("No registered reader is able to parse the specified archive.");
     }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose() => this.archiveReader.Dispose();
 }

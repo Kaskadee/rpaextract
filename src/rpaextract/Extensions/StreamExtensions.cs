@@ -4,18 +4,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace rpaextract.Extensions; 
+namespace rpaextract.Extensions;
 
 /// <summary>
-///     Provides extension methods to simplify retrieving data from a <seealso cref="Stream"/>.
+///     Provides extension methods to simplify retrieving data from a <seealso cref="Stream" />.
 /// </summary>
 public static class StreamExtensions {
     /// <summary>
     ///     Reads a string that is terminated by a new-line-character (\n) asynchronously.
     /// </summary>
-    /// <param name="stream">The <see cref="Stream"/> to read the string from.</param>
-    /// <param name="token">The <seealso cref="CancellationToken"/> to cancel the task.</param>
-    /// <returns>The <see cref="string"/> that was read from the stream.</returns>
+    /// <param name="stream">The <see cref="Stream" /> to read the string from.</param>
+    /// <param name="token">The <seealso cref="CancellationToken" /> to cancel the task.</param>
+    /// <returns>The <see cref="string" /> that was read from the stream.</returns>
     /// <remarks>The position of the stream will be advanced to the point after the line-break character.</remarks>
     public static async Task<string> ReadLineAsync(this Stream stream, CancellationToken token = default) {
         token.ThrowIfCancellationRequested();
@@ -31,6 +31,7 @@ public static class StreamExtensions {
                 return sb.ToString();
             sb.Append(c);
         }
+
         return sb.ToString();
     }
 
@@ -38,7 +39,7 @@ public static class StreamExtensions {
     ///     Reads all remaining bytes from the specified stream into a byte array.
     /// </summary>
     /// <param name="stream">The stream to read from.</param>
-    /// <param name="token">The <seealso cref="CancellationToken"/> to cancel the task.</param>
+    /// <param name="token">The <seealso cref="CancellationToken" /> to cancel the task.</param>
     /// <returns>The read data from the specified stream.</returns>
     public static async Task<byte[]> ReadToEndAsync(this Stream stream, CancellationToken token = default) {
         await using var ms = new MemoryStream();

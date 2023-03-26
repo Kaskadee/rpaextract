@@ -13,29 +13,29 @@ using sharppickle;
 namespace rpaextract.API;
 
 /// <summary>
-/// Provides an implementation of the <see cref="ArchiveReader"/> base class to support reading default Ren'py archives.
+///     Provides an implementation of the <see cref="ArchiveReader" /> base class to support reading default Ren'py
+///     archives.
 /// </summary>
 public sealed class RenpyArchiveReader : ArchiveReader {
-    private readonly Stream stream;
     private readonly List<ArchiveIndex> indices = new();
+    private readonly Stream stream;
     private ArchiveVersion? archiveVersion;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RenpyArchiveReader"/> class.
+    ///     Initializes a new instance of the <see cref="RenpyArchiveReader" /> class.
     /// </summary>
-    /// <param name="file">The information of the file to load as an archive as an instance of <see cref="FileInfo"/> class.</param>
-    public RenpyArchiveReader(FileInfo file) : base(file) {
-        this.stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
-    }
+    /// <param name="file">The information of the file to load as an archive as an instance of <see cref="FileInfo" /> class.</param>
+    public RenpyArchiveReader(FileInfo file) : base(file) => this.stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
 
     /// <summary>
-    /// Gets a value indicating whether the loaded file is supported and can be read by this implementation of the <see cref="ArchiveReader"/> interface.
+    ///     Gets a value indicating whether the loaded file is supported and can be read by this implementation of the
+    ///     <see cref="ArchiveReader" /> interface.
     /// </summary>
     /// <returns><c>true</c>, if the archive is supported; otherwise <c>false</c>.</returns>
     public override bool IsSupported() => this.archiveVersion is ArchiveVersion.RPA2 or ArchiveVersion.RPA3 or ArchiveVersion.RPA32 or ArchiveVersion.RPA4;
 
     /// <summary>
-    /// Gets the file name list of the archive as an <see cref="IEnumerable{T}"/>.
+    ///     Gets the file name list of the archive as an <see cref="IEnumerable{T}" />.
     /// </summary>
     /// <returns>The file index list of the loaded archive.</returns>
     public override IEnumerable<string> GetFiles() {
@@ -44,15 +44,15 @@ public sealed class RenpyArchiveReader : ArchiveReader {
     }
 
     /// <summary>
-    /// Gets the archive entries as an <see cref="IEnumerable{T}"/>.
+    ///     Gets the archive entries as an <see cref="IEnumerable{T}" />.
     /// </summary>
     /// <returns>The archive entry index list of the loaded archive.</returns>
     public override IEnumerable<ArchiveIndex> EnumerateIndices() => this.indices ?? throw new NotSupportedException("The archive is not valid or unsupported.");
 
     /// <summary>
-    /// Loads the archive content from the file specified in the constructor.
+    ///     Loads the archive content from the file specified in the constructor.
     /// </summary>
-    /// <param name="token">The <seealso cref="CancellationToken"/> to cancel the asynchronous task.</param>
+    /// <param name="token">The <seealso cref="CancellationToken" /> to cancel the asynchronous task.</param>
     public override async Task LoadAsync(CancellationToken token = default) {
         if (this.stream.Length < 51)
             throw new ArgumentOutOfRangeException(nameof(this.stream), "The file is too small to be a valid archive!");
@@ -88,11 +88,11 @@ public sealed class RenpyArchiveReader : ArchiveReader {
     }
 
     /// <summary>
-    /// Reads the content of the specified <see cref="ArchiveIndex"/> from the loaded archive.
+    ///     Reads the content of the specified <see cref="ArchiveIndex" /> from the loaded archive.
     /// </summary>
-    /// <param name="index">The <see cref="ArchiveIndex"/> to read from the archive.</param>
-    /// <param name="token">The <seealso cref="CancellationToken"/> to cancel the asynchronous task.</param>
-    /// <returns>The contents of the file as a <see cref="ReadOnlyMemory{T}"/> of <see cref="byte"/>.</returns>
+    /// <param name="index">The <see cref="ArchiveIndex" /> to read from the archive.</param>
+    /// <param name="token">The <seealso cref="CancellationToken" /> to cancel the asynchronous task.</param>
+    /// <returns>The contents of the file as a <see cref="ReadOnlyMemory{T}" /> of <see cref="byte" />.</returns>
     public override async Task<ReadOnlyMemory<byte>> ReadAsync(ArchiveIndex index, CancellationToken token = default) {
         // Check if cancellation is already requested.
         token.ThrowIfCancellationRequested();
@@ -124,10 +124,10 @@ public sealed class RenpyArchiveReader : ArchiveReader {
     }
 
     /// <summary>
-    /// Gets the archive version from the loaded file.
+    ///     Gets the archive version from the loaded file.
     /// </summary>
-    /// <param name="token">The <seealso cref="CancellationToken"/> to cancel the task.</param>
-    /// <returns>The archive version as an value of <see cref="ArchiveVersion"/>.</returns>
+    /// <param name="token">The <seealso cref="CancellationToken" /> to cancel the task.</param>
+    /// <returns>The archive version as an value of <see cref="ArchiveVersion" />.</returns>
     public override async ValueTask<ArchiveVersion> GetArchiveVersionAsync(CancellationToken token = default) {
         if (this.archiveVersion is not null)
             return this.archiveVersion.Value;
@@ -140,7 +140,7 @@ public sealed class RenpyArchiveReader : ArchiveReader {
             "RPA-3.2" => ArchiveVersion.RPA32,
             "RPA-3.0" => ArchiveVersion.RPA3,
             "RPA-2.0" => ArchiveVersion.RPA2,
-            var _ => ArchiveVersion.Unknown,
+            var _ => ArchiveVersion.Unknown
         };
     }
 
@@ -160,9 +160,7 @@ public sealed class RenpyArchiveReader : ArchiveReader {
     }
 
     /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
-    public override void Dispose() {
-        this.stream.Dispose();
-    }
+    public override void Dispose() { this.stream.Dispose(); }
 }
