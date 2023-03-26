@@ -4,7 +4,7 @@
     <Product>rpaextract</Product>
     <Description>An application for listing/extracting content from Ren'py archives.</Description>
     <Company>Fabian Creutz</Company>
-    <Copyright>Copyright © 2017-2022 Fabian Creutz</Copyright>
+    <Copyright>Copyright © 2017-2023 Fabian Creutz</Copyright>
     <!-- Assembly Version -->
     <Version>1.3.1</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>

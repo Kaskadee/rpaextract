@@ -8,7 +8,7 @@ using CommandLine;
 namespace rpaextract;
 
 /// <summary>
-///     rpaextract - Copyright (c) 2017-2022 Fabian Creutz.
+///     rpaextract - Copyright (c) 2017-2023 Fabian Creutz.
 ///     An application for listing/extracting content from Ren'py archives.
 /// </summary>
 internal sealed class Program {
