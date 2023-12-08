@@ -17,7 +17,7 @@ internal sealed class Program {
     /// </summary>
     /// <param name="args">The command-line arguments passed to the application.</param>
     /// <returns>The exit code for the current process.</returns>
-    private static async Task<int> Main(string[] args) => await Parser.Default.ParseArguments<Options>(args).MapResult(RunOptions, _ => Task.FromResult(1));
+    private static Task<int> Main(string[] args) => Parser.Default.ParseArguments<Options>(args).MapResult(RunOptions, _ => Task.FromResult(1));
 
     /// <summary>
     ///     Runs the program with the parsed command-line arguments.
