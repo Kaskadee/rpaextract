@@ -11,11 +11,6 @@ namespace rpaextract.API;
 /// </summary>
 public abstract class ArchiveReader : IDisposable {
     /// <summary>
-    ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public abstract void Dispose();
-
-    /// <summary>
     ///     Gets the information of the loaded file as an instance of the <see cref="FileInfo" /> class.
     /// </summary>
     protected FileInfo File { get; }
@@ -69,4 +64,9 @@ public abstract class ArchiveReader : IDisposable {
     /// <param name="token">The <seealso cref="CancellationToken" /> to cancel the task.</param>
     /// <returns>The archive version as an value of <see cref="ArchiveVersion" />.</returns>
     public abstract ValueTask<ArchiveVersion> GetArchiveVersionAsync(CancellationToken token = default);
+    
+    /// <summary>
+    ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public abstract void Dispose();
 }
