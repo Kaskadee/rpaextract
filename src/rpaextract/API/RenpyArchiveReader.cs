@@ -110,10 +110,7 @@ public sealed class RenpyArchiveReader : ArchiveReader {
         var buffer = ArrayPool<byte>.Shared.Rent(length);
         Memory<byte> bufferMemory = buffer.AsMemory(0, length);
         try {
-            var bytesRead = await this.stream.ReadAsync(bufferMemory, token);
-            if (bytesRead != length)
-                throw new InvalidDataException("Less data read than expected.");
-            
+            await this.stream.ReadExactlyAsync(bufferMemory, token);
             // Join data prefix and data content together.
             byte[] data = [..index.Prefix.Span, ..bufferMemory.Span];
             return data;
@@ -161,5 +158,5 @@ public sealed class RenpyArchiveReader : ArchiveReader {
     /// <summary>
     ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
-    public override void Dispose() { this.stream.Dispose(); }
+    public override void Dispose() => this.stream.Dispose();
 }
