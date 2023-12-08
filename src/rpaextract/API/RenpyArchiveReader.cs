@@ -55,7 +55,7 @@ public sealed class RenpyArchiveReader : ArchiveReader {
     /// <param name="token">The <seealso cref="CancellationToken" /> to cancel the asynchronous task.</param>
     public override async Task LoadAsync(CancellationToken token = default) {
         if (this.stream.Length < 51)
-            throw new ArgumentOutOfRangeException(nameof(this.stream), "The file is too small to be a valid archive!");
+            throw new InvalidOperationException("The file is too small to be a valid archive!");
         // Validate archive version.
         this.archiveVersion = await this.GetArchiveVersionAsync(token);
         if (!this.IsSupported())
