@@ -40,7 +40,7 @@ public sealed class RenpyArchiveReader : ArchiveReader {
     /// <returns>The file index list of the loaded archive.</returns>
     public override IEnumerable<string> GetFiles() {
         // Check if current archive is valid.
-        return !this.IsSupported() || !this.indices.Any() ? throw new NotSupportedException("The archive is not valid or unsupported.") : this.indices.Select(x => x.FilePath).OrderBy(x => x);
+        return !this.IsSupported() || this.indices.Count == 0 ? throw new NotSupportedException("The archive is not valid or unsupported.") : this.indices.Select(x => x.FilePath).OrderBy(x => x);
     }
 
     /// <summary>
@@ -97,9 +97,8 @@ public sealed class RenpyArchiveReader : ArchiveReader {
         // Check if cancellation is already requested.
         token.ThrowIfCancellationRequested();
         // Validate arguments.
-        if (index == null)
-            throw new ArgumentNullException(nameof(index));
-        if (!this.IsSupported() || !this.indices.Any())
+        ArgumentNullException.ThrowIfNull(index);
+        if (!this.IsSupported() || this.indices.Count == 0)
             throw new NotSupportedException("The archive is not valid or unsupported.");
         if (!this.indices.Contains(index))
             throw new FileNotFoundException("The specified index is not located in the archive.");
