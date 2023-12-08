@@ -22,7 +22,7 @@ public sealed class YVANeusEXArchiveReader : ArchiveReader {
     /// </summary>
     public static readonly byte[] SupportedHeader = { 0xC3, 0xAE, 0x45, 0xCC, 0xF0, 0x69 };
 
-    private readonly IList<ArchiveIndex> archiveIndices = new List<ArchiveIndex>();
+    private readonly List<ArchiveIndex> archiveIndices = [];
 
     private readonly Stream stream;
     private ArchiveVersion? archiveVersion;
@@ -53,7 +53,7 @@ public sealed class YVANeusEXArchiveReader : ArchiveReader {
     ///     Gets the file name list of the archive as an <see cref="IEnumerable{T}" />.
     /// </summary>
     /// <returns>The file index list of the loaded archive.</returns>
-    public override IEnumerable<string> GetFiles() => !this.IsSupported() || !this.archiveIndices.Any() ? throw new NotSupportedException("The archive is not valid or unsupported.") : this.archiveIndices.Select(x => x.FilePath).OrderBy(x => x);
+    public override IEnumerable<string> GetFiles() => !this.IsSupported() || this.archiveIndices.Count == 0 ? throw new NotSupportedException("The archive is not valid or unsupported.") : this.archiveIndices.Select(x => x.FilePath).OrderBy(x => x);
 
     /// <summary>
     ///     Gets the archive entries as an <see cref="IEnumerable{T}" />.
@@ -86,9 +86,7 @@ public sealed class YVANeusEXArchiveReader : ArchiveReader {
             while (this.stream.Position < this.stream.Length) {
                 // Read length of index information as a 16-bit unsigned integer in big endian order.
                 Memory<byte> buffer = owner.Memory[..sizeof(ushort)];
-                var bytesRead = await this.stream.ReadAsync(buffer, token);
-                if (bytesRead != sizeof(ushort))
-                    throw new InvalidDataException($"Failed to read enough bytes for {typeof(ushort)}.");
+                await this.stream.ReadExactlyAsync(buffer, token);
                 if (BitConverter.IsLittleEndian)
                     buffer.Span.Reverse();
                 var indexLength = BitConverter.ToUInt16(buffer.Span);
@@ -100,7 +98,7 @@ public sealed class YVANeusEXArchiveReader : ArchiveReader {
 
                 // Get file name, size and checksum from index information.
                 buffer = owner.Memory[..indexLength];
-                bytesRead = await this.stream.ReadAsync(buffer, token);
+                var bytesRead = await this.stream.ReadAsync(buffer, token);
                 if (bytesRead != indexLength)
                     throw new InvalidDataException($"Failed to read enough bytes to read file index information (expected: {indexLength}, got: {bytesRead})");
                 // Decrypt file index if archive metainformation is encrypted.
@@ -138,7 +136,7 @@ public sealed class YVANeusEXArchiveReader : ArchiveReader {
         token.ThrowIfCancellationRequested();
         if (!this.isLoaded)
             throw new InvalidOperationException("The archive is not loaded.");
-        if (!this.IsSupported() || !this.archiveIndices.Any())
+        if (!this.IsSupported() || this.archiveIndices.Count == 0)
             throw new InvalidOperationException("The archive is not valid or unsupported.");
         if (!this.archiveIndices.Contains(index))
             throw new FileNotFoundException("The specified index is not located in the archive.");
@@ -248,5 +246,5 @@ public sealed class YVANeusEXArchiveReader : ArchiveReader {
     /// <summary>
     ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
-    public override void Dispose() { this.stream.Dispose(); }
+    public override void Dispose() => this.stream.Dispose();
 }
