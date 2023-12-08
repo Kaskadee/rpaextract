@@ -14,7 +14,7 @@ public sealed class ArchiveIndex {
     /// <summary>
     ///     Gets the offset of the beginning of the file.
     /// </summary>
-    public long Offset { get; internal set; }
+    public long Offset { get; }
 
     /// <summary>
     ///     Gets the checksum of the file.
@@ -24,7 +24,7 @@ public sealed class ArchiveIndex {
     /// <summary>
     ///     Gets the length of the file in bytes.
     /// </summary>
-    public int Length { get; internal set; }
+    public int Length { get; }
 
     /// <summary>
     ///     Gets the prefix of this file. This seems to be optional and is appended to the beginning of the file data.
