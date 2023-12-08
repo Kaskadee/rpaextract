@@ -21,17 +21,13 @@ namespace rpaextract;
 internal sealed class Archive : IDisposable {
     private static readonly Type[] loadedArchiveReaders = { typeof(RenpyArchiveReader), typeof(YVANeusEXArchiveReader) };
 
-    /// <summary>
-    ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose() => this.archiveReader.Dispose();
-
+    private readonly ArchiveReader archiveReader;
+    
     /// <summary>
     ///     Gets the version of the current Ren'py archive.
     /// </summary>
+    [PublicAPI]
     public ArchiveVersion Version { get; }
-
-    private readonly ArchiveReader archiveReader;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="Archive" /> class.
@@ -46,6 +42,7 @@ internal sealed class Archive : IDisposable {
     /// <summary>
     ///     Returns true if the loaded archive is valid and supported.
     /// </summary>
+    [PublicAPI]
     public bool IsSupported() => this.archiveReader.IsSupported();
 
     /// <summary>
@@ -66,7 +63,7 @@ internal sealed class Archive : IDisposable {
     /// <param name="token">The <seealso cref="CancellationToken" /> to cancel the task.</param>
     /// <returns>The contents of the file as a byte-array</returns>
     [PublicAPI]
-    public async Task<ReadOnlyMemory<byte>> ReadAsync(ArchiveIndex index, CancellationToken token = default) => await this.archiveReader.ReadAsync(index, token);
+    public Task<ReadOnlyMemory<byte>> ReadAsync(ArchiveIndex index, CancellationToken token = default) => this.archiveReader.ReadAsync(index, token);
 
     /// <summary>
     ///     Loads the Ren'py archive from the specified file asynchronously.
@@ -104,4 +101,9 @@ internal sealed class Archive : IDisposable {
 
         throw new NotSupportedException("No registered reader is able to parse the specified archive.");
     }
+    
+    /// <summary>
+    ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose() => this.archiveReader.Dispose();
 }
