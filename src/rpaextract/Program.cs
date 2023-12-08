@@ -26,6 +26,14 @@ internal sealed class Program {
     /// <returns>The exit code for the current process.</returns>
     private static async Task<int> RunOptions(Options options) {
         CancellationTokenSource source = new();
+        
+        // Check if archive operation has been specified.
+        if (options is { ListFiles: false, ExtractFiles: false }) {
+            if (!options.QuietMode)
+                await Console.Error.WriteLineAsync("(Error) No archive operation specified. Use -l to list all files in the archive or -x to extract all files.");
+            return 4;
+        }
+        
         var archivePath = options.Path;
         if (archivePath is null || !File.Exists(archivePath)) {
             if (!options.QuietMode)
