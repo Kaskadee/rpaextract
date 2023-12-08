@@ -74,8 +74,7 @@ internal sealed class Archive : IDisposable {
     [PublicAPI]
     public static async Task<Archive> LoadAsync(FileInfo fi, CancellationToken token = default) {
         // Validate arguments and file.
-        if (fi == null)
-            throw new ArgumentNullException(nameof(fi));
+        ArgumentNullException.ThrowIfNull(fi);
         if (!fi.Exists || fi.Attributes.HasFlag(FileAttributes.Directory))
             throw new FileNotFoundException("The specified archive couldn't be found!", fi.FullName);
         if (fi.Length < 51)
