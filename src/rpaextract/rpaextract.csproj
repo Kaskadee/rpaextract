@@ -10,8 +10,8 @@
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
 		<!-- Compiler Properties -->
-		<TargetFramework>net6.0</TargetFramework>
-		<LangVersion>10.0</LangVersion>
+		<TargetFramework>net8.0</TargetFramework>
+		<LangVersion>12.0</LangVersion>
 		<OutputType>Exe</OutputType>
 		<nullable>enable</nullable>
 		<!-- Package Information -->
