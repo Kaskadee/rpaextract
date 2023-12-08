@@ -17,7 +17,7 @@ namespace rpaextract.API;
 ///     archives.
 /// </summary>
 public sealed class RenpyArchiveReader : ArchiveReader {
-    private readonly List<ArchiveIndex> indices = new();
+    private readonly List<ArchiveIndex> indices = [];
     private readonly Stream stream;
     private ArchiveVersion? archiveVersion;
 
@@ -113,9 +113,9 @@ public sealed class RenpyArchiveReader : ArchiveReader {
             var bytesRead = await this.stream.ReadAsync(bufferMemory, token);
             if (bytesRead != length)
                 throw new InvalidDataException("Less data read than expected.");
-            Memory<byte> data = new byte[index.Length + index.Prefix.Length];
-            index.Prefix.CopyTo(data[..index.Prefix.Length]);
-            bufferMemory.CopyTo(data[index.Prefix.Length..(data.Length + index.Prefix.Length)]);
+            
+            // Join data prefix and data content together.
+            byte[] data = [..index.Prefix.Span, ..bufferMemory.Span];
             return data;
         } finally {
             ArrayPool<byte>.Shared.Return(buffer);
