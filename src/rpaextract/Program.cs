@@ -39,7 +39,7 @@ internal sealed class Program {
             archive = await Archive.LoadAsync(fi, source.Token);
         } catch (Exception ex) {
             if (!options.QuietMode)
-                await Console.Error.WriteLineAsync($"(Error) Failed to open archive: {ex.Message}");
+                await Console.Error.WriteLineAsync($"(Error) Failed to open archive: {ex}");
             return 3;
         }
 
@@ -58,7 +58,7 @@ internal sealed class Program {
                     Directory.CreateDirectory(outputPath);
             } catch (Exception ex) {
                 if (!options.QuietMode)
-                    Console.WriteLine($"(Error) Couldn't create output directory: {ex.Message}");
+                    Console.WriteLine($"(Error) Couldn't create output directory: {ex}");
                 return ex.HResult;
             }
 
