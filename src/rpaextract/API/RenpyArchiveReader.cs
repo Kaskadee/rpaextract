@@ -86,7 +86,12 @@ public sealed class RenpyArchiveReader : ArchiveReader {
             var (item1, item2, item3) = value.First() as Tuple<object?, object?, object?> ?? throw new InvalidDataException("Failed to retrieve archive index data from deserialized dictionary.");
             var indexOffset = Convert.ToInt64(item1);
             var length = Convert.ToInt32(item2);
-            var prefix = enc.GetBytes(item3 as string ?? throw new InvalidDataException("Prefix not saved as string!"));
+            ReadOnlyMemory<byte> prefix = item3 switch {
+                null => ReadOnlyMemory<byte>.Empty,
+                string encodedPrefix => enc.GetBytes(encodedPrefix),
+                ReadOnlyMemory<byte> prefixBuffer => prefixBuffer,
+                var _ => throw new InvalidDataException($"Unsupported type for prefix: {item3.GetType().Name}")
+            };
             return new ArchiveIndex(key, indexOffset ^ deobfuscationKey, length ^ deobfuscationKey, prefix);
         });
         this.indices.AddRange(ind);
