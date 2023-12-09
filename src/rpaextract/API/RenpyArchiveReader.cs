@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -65,7 +66,7 @@ public sealed class RenpyArchiveReader : ArchiveReader {
         var header = await this.stream.ReadLineAsync(token);
         var parts = header.Split((char)0x20);
         // Seek to the hexadecimal offset and read archive structure.
-        var offset = Convert.ToInt32(parts[1], 16);
+        var offset = long.Parse(parts[1], NumberStyles.HexNumber);
         var deobfuscationKey = CalculateDeobfuscationKey(this.archiveVersion.Value, parts);
         this.stream.Seek(offset, SeekOrigin.Begin);
         await using var zlib = new ZLibStream(this.stream, CompressionMode.Decompress, true);
