@@ -21,7 +21,12 @@ public sealed class RenpyArchiveReader : ArchiveReader {
     private readonly List<ArchiveIndex> indices = [];
     private readonly Stream stream;
     private ArchiveVersion? archiveVersion;
-
+    
+    /// <summary>
+    ///     Gets the number of files in the archive.
+    /// </summary>
+    public override int Length => this.indices.Count;
+    
     /// <summary>
     ///     Initializes a new instance of the <see cref="RenpyArchiveReader" /> class.
     /// </summary>

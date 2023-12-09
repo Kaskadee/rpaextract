@@ -34,6 +34,11 @@ public sealed class YVANeusEXArchiveReader : ArchiveReader {
     private bool isLoaded;
 
     /// <summary>
+    ///     Gets the number of files in the archive.
+    /// </summary>
+    public override int Length => this.archiveIndices.Count;
+
+    /// <summary>
     ///     Initializes a new instance of the <see cref="YVANeusEXArchiveReader" /> class.
     /// </summary>
     /// <param name="file">The information of the file to load as an archive as an instance of <see cref="FileInfo" /> class.</param>

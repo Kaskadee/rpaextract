@@ -30,6 +30,11 @@ internal sealed class Archive : IDisposable {
     public ArchiveVersion Version { get; }
 
     /// <summary>
+    ///     Gets the number of files in the archive.
+    /// </summary>
+    public int Length => this.archiveReader.Length;
+
+    /// <summary>
     ///     Initializes a new instance of the <see cref="Archive" /> class.
     /// </summary>
     /// <param name="reader">The implementation of the <see cref="archiveReader" /> class which is able to read the archive.</param>

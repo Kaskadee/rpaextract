@@ -14,6 +14,11 @@ public abstract class ArchiveReader : IDisposable {
     ///     Gets the information of the loaded file as an instance of the <see cref="FileInfo" /> class.
     /// </summary>
     protected FileInfo File { get; }
+    
+    /// <summary>
+    ///     Gets the number of files in the archive.
+    /// </summary>
+    public abstract int Length { get; }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="ArchiveReader" /> class.
