@@ -35,6 +35,12 @@ internal sealed class Options {
     ///     Gets or sets a value indicating whether console output should be suppressed or not.
     /// </summary>
     /// <value><c>true</c> if output will be suppressed; otherwise, <c>false</c>.</value>
-    [Option('q', "quiet", HelpText = "Suppresses any output to the standard output.")]
+    [Option('q', "quiet", HelpText = "Suppresses any output to the standard output.", SetName = "Logging")]
     public bool QuietMode { get; [UsedImplicitly] set; }
+    
+    /// <summary>
+    ///     Gets or sets a value indicating whether detailed information should be printed to the console.
+    /// </summary>
+    [Option('v', "verbose", HelpText = "Prints detailed information about the current operation of the program.", SetName = "Logging")]
+    public bool Verbose { get; [UsedImplicitly] set; }
 }

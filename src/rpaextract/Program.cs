@@ -44,6 +44,8 @@ internal sealed class Program {
         FileInfo fi = new(archivePath);
         Archive archive;
         try {
+            if(!options.QuietMode)
+                Console.WriteLine("Loading archive structure...");
             archive = await Archive.LoadAsync(fi, source.Token);
         } catch (Exception ex) {
             if (!options.QuietMode)
@@ -59,8 +61,10 @@ internal sealed class Program {
 
         if (options.ExtractFiles) {
             // Create output directory at archive location.
-            var directoryName = fi.DirectoryName ?? throw new ArgumentException("Cannot get diretory name.");
-            var outputPath = string.IsNullOrWhiteSpace(options.OutputDirectory) ? Path.Combine(directoryName, $"rpaextract_{Path.GetFileNameWithoutExtension(fi.Name)}") : options.OutputDirectory;
+            if(options.Verbose)
+                Console.WriteLine("Creating output directory...");
+            var directoryName = fi.DirectoryName ?? throw new ArgumentException("Failed to retrieve directory name for the specified file.");
+            var outputPath = string.IsNullOrWhiteSpace(options.OutputDirectory) ? Path.Combine(directoryName, $"rpaextract_{Path.GetFileNameWithoutExtension(fi.Name)}") : Path.GetFullPath(options.OutputDirectory);
             try {
                 if (!Directory.Exists(outputPath))
                     Directory.CreateDirectory(outputPath);
@@ -71,6 +75,8 @@ internal sealed class Program {
             }
 
             // Iterate through every file index.
+            if(!options.QuietMode)
+                Console.WriteLine($"Extracing files to {outputPath}");
             foreach (ArchiveIndex ind in archive.EnumerateIndices()) {
                 // Read file data from index.
                 ReadOnlyMemory<byte> data = await archive.ReadAsync(ind, source.Token);
