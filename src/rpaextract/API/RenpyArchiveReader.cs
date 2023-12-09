@@ -67,6 +67,10 @@ public sealed class RenpyArchiveReader : ArchiveReader {
         var parts = header.Split((char)0x20);
         // Seek to the hexadecimal offset and read archive structure.
         var offset = long.Parse(parts[1], NumberStyles.HexNumber);
+        if (offset <= 0)
+            throw new InvalidOperationException($"Invalid offset read from archive header (got: {offset})");
+        
+        // Calculate the deobfuscation key that is required to decrypt the meta data of the archive contents.
         var deobfuscationKey = CalculateDeobfuscationKey(this.archiveVersion.Value, parts);
         this.stream.Seek(offset, SeekOrigin.Begin);
         await using var zlib = new ZLibStream(this.stream, CompressionMode.Decompress, true);
