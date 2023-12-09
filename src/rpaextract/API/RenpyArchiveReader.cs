@@ -108,16 +108,12 @@ public sealed class RenpyArchiveReader : ArchiveReader {
         this.stream.Seek(index.Offset, SeekOrigin.Begin);
         // Read file content to memory.
         var length = index.Length - index.Prefix.Length;
-        var buffer = ArrayPool<byte>.Shared.Rent(length);
-        Memory<byte> bufferMemory = buffer.AsMemory(0, length);
-        try {
-            await this.stream.ReadExactlyAsync(bufferMemory, token);
-            // Join data prefix and data content together.
-            byte[] data = [..index.Prefix.Span, ..bufferMemory.Span];
-            return data;
-        } finally {
-            ArrayPool<byte>.Shared.Return(buffer);
-        }
+        using IMemoryOwner<byte> owner = MemoryPool<byte>.Shared.Rent(length);
+        Memory<byte> buffer = owner.Memory[..length];
+        await this.stream.ReadExactlyAsync(buffer, token);
+        // Join data prefix and data content together.
+        byte[] data = [..index.Prefix.Span, ..buffer.Span];
+        return data;
     }
 
     /// <summary>
