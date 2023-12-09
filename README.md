@@ -6,22 +6,19 @@ Utilizes [sharppickle](https://github.com/Kaskadee/sharppickle ) to parse python
 ## Usage
 
 ```text
-rpaextract 1.3.2
-Copyright © 2017-2023 Fabian Creutz
+rpaextract 1.4.0
+USAGE:
+    rpaextract.exe [OPTIONS]
 
-  -f, --archive    Required. Sets the path to the RPA archive to extract.
-
-  -l, --list       Prints the path and name of all files in the archive to the standard output.
-
-  -x, --extract    Extracts all files in the archive to the disk.
-
-  -o, --output     Sets the directory to extract the files to (only works with -x).
-
-  -q, --quiet      Suppresses any output to the standard output.
-
-  --help           Display this help screen.
-
-  --version        Display version information.
+OPTIONS:
+    -h, --help       Prints help information
+    -v, --version    Prints version information
+    -f, --archive    The path to the Ren'py (.rpa) archive
+    -l, --list       Lists all files in the archive by printing the path and name to the standard output. Mutually exclusive with '-x'
+    -x, --extract    Extracts all files from the archive to the disk. Mutually exclusive with '-l'
+    -o, --output     The output directory to extract files to. Only works with '-x'
+    -q, --quiet      Suppresses any output to the standard output. Mutually exclusive with '-v'
+    -v, --verbose    Prints detailed information about the current operation of the program. Mutually exclusive with '-q'
 ```
 
 ## Sample archive
