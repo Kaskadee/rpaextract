@@ -28,12 +28,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
+		<PackageReference Include="sharppickle" Version="1.5.0" />
 		<PackageReference Include="Spectre.Console" Version="0.48.0" />
 		<PackageReference Include="Spectre.Console.Cli" Version="0.48.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\sharppickle\sharppickle\sharppickle.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
