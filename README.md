@@ -1,18 +1,17 @@
 # rpaextract
 
-An application for listing/extracting content from Ren'py archives. Written in C# 12 / .NET 8.0
+An application for listing/extracting content from Ren'py archives. Written in C# 14 / .NET 10.0
 Utilizes [sharppickle](https://github.com/Kaskadee/sharppickle ) to parse python's pickle format.
 
 ## Usage
 
 ```text
-rpaextract 1.4.0
+rpaextract 1.5.0
 USAGE:
     rpaextract.exe [OPTIONS]
 
 OPTIONS:
     -h, --help       Prints help information
-    -v, --version    Prints version information
     -f, --archive    The path to the Ren'py (.rpa) archive
     -l, --list       Lists all files in the archive by printing the path and name to the standard output. Mutually exclusive with '-x'
     -x, --extract    Extracts all files from the archive to the disk. Mutually exclusive with '-l'
@@ -28,7 +27,7 @@ It contains a single .png file to test the functionality of rpaextract.
 
 ## Dependencies
 
-- [.NET 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0/runtime )
+- [.NET 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0/runtime )
 - [sharppickle](https://github.com/Kaskadee/sharppickle ) (pickle deserialization)
 - [Spectre.Console](https://spectreconsole.net/ ) (library to create console applications / provided by NuGet)
 
