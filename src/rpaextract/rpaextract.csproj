@@ -5,6 +5,7 @@
 		<Description>An application for listing/extracting content from Ren'py archives.</Description>
 		<Company>Fabian Creutz</Company>
 		<Copyright>Copyright © 2017-2026 Fabian Creutz</Copyright>
+
 		<!-- Assembly Version -->
 		<Version>1.4.1</Version>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
@@ -16,19 +17,20 @@
 		<OutputType>Exe</OutputType>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>true</ImplicitUsings>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
 		<!-- Package Information -->
 		<RepositoryUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/</RepositoryUrl>
 		<PackageLicenseUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/blob/master/LICENSE.txt</PackageLicenseUrl>
 		<PackageProjectUrl>https://git.kaskadee.eu/Kaskadee/rpaextract/</PackageProjectUrl>
-		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 
+	<!-- NuGet References -->
 	<ItemGroup>
-		<PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
-		<PackageReference Include="sharppickle" Version="1.5.0" />
-		<PackageReference Include="Spectre.Console" Version="0.48.0" />
-		<PackageReference Include="Spectre.Console.Cli" Version="0.48.0" />
+		<PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
+		<PackageReference Include="sharppickle" Version="1.6.0" />
+		<PackageReference Include="Spectre.Console" Version="0.54.0" />
+		<PackageReference Include="Spectre.Console.Cli" Version="0.53.1" />
 	</ItemGroup>
 
 	<ItemGroup>
