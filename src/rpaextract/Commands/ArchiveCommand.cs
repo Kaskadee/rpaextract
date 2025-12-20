@@ -1,5 +1,5 @@
 ﻿// rpaextract - ArchiveCommand.cs
-// Copyright (C) 2023 Fabian Creutz.
+// Copyright (C) 2017-2026 Fabian Creutz.
 // 
 // Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the
 // European Commission - subsequent versions of the EUPL (the "Licence");
@@ -13,14 +13,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the Licence for the specific language governing permissions and limitations under the Licence.
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using rpaextract.Logging;
 using Spectre.Console;
@@ -44,7 +38,7 @@ internal sealed class ArchiveCommand : AsyncCommand<ArchiveCommand.Settings> {
         public string? Path { get; [UsedImplicitly] init; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether list all files or not.
+        ///     Gets or sets a value indicating whether to list all files or not.
         /// </summary>
         [Description("Lists all files in the archive by printing the path and name to the standard output. Mutually exclusive with '-x'.")]
         [CommandOption("-l|--list")]
@@ -103,8 +97,9 @@ internal sealed class ArchiveCommand : AsyncCommand<ArchiveCommand.Settings> {
     /// </summary>
     /// <param name="context">The <see cref="CommandContext"/> to execute this command in.</param>
     /// <param name="settings">The parsed command-line settings as a <see cref="Settings"/> instance.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the command.</param>
     /// <returns>The exit code of the application</returns>
-    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings) {
+    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken) {
         // Set logging mode based on the current settings.
         Log.SetLogMode(settings.Verbose ? LogMode.Verbose : settings.QuietMode ? LogMode.Quiet : LogMode.Normal);
         
@@ -119,7 +114,7 @@ internal sealed class ArchiveCommand : AsyncCommand<ArchiveCommand.Settings> {
                     archive = await Archive.LoadAsync(fi, this.cancellationTokenSource.Token);
                 });
             }
-            // Check if file archive has been loaded.
+            // Check if the file archive has been loaded.
             if (archive is null)
                 throw new InvalidOperationException("Archive is null.");
         } catch (Exception ex) {
@@ -129,13 +124,13 @@ internal sealed class ArchiveCommand : AsyncCommand<ArchiveCommand.Settings> {
         
         if (settings.ListFiles) {
             // List all files by printing the paths to the standard output.
-            Tree tree = this.BuildFileTree(archive);
+            Tree tree = BuildFileTree(archive);
             AnsiConsole.Write(tree);
         } else if (settings.ExtractFiles) {
             // Create output directory at archive location.
             Log.Verbose("Creating output directory...");
-            var directoryName = fi.DirectoryName ?? throw new ArgumentException("Failed to retrieve directory name for the specified file.");
-            var outputPath = string.IsNullOrWhiteSpace(settings.OutputDirectory) ? Path.Combine(directoryName, $"rpaextract_{Path.GetFileNameWithoutExtension(fi.Name)}") : Path.GetFullPath(settings.OutputDirectory);
+            string directoryName = fi.DirectoryName ?? throw new ArgumentException("Failed to retrieve directory name for the specified file.");
+            string outputPath = string.IsNullOrWhiteSpace(settings.OutputDirectory) ? Path.Combine(directoryName, $"rpaextract_{Path.GetFileNameWithoutExtension(fi.Name)}") : Path.GetFullPath(settings.OutputDirectory);
             try {
                 if (!Directory.Exists(outputPath))
                     Directory.CreateDirectory(outputPath);
@@ -145,21 +140,29 @@ internal sealed class ArchiveCommand : AsyncCommand<ArchiveCommand.Settings> {
             }
             
             // Iterate through every file index.
+            FileStreamOptions outputStreamOptions = new() {
+                Mode = FileMode.CreateNew,
+                Access = FileAccess.Write,
+                Share = FileShare.Read,
+                Options = FileOptions.Asynchronous
+            };
             Log.Info($"Extracting files to {outputPath}");
             await AnsiConsole.Progress().StartAsync(async ctx => {
                 ProgressTask task = ctx.AddTask("[green]Extracting files...[/]", maxValue: archive.Length);
                 
                 foreach (ArchiveIndex ind in archive.EnumerateIndices()) {
                     Log.Verbose($"Extracting {ind.FilePath}");
-                    // Read file data from index.
+                    // Read file data from the index.
                     ReadOnlyMemory<byte> data = await archive.ReadAsync(ind, this.cancellationTokenSource.Token);
-                    // Combine output directory with internal archive path.
-                    var path = Path.Combine(outputPath, ind.FilePath);
+
+                    // Combine the output directory with the internal archive path.
+                    string path = Path.Combine(outputPath, ind.FilePath);
                     var info = new FileInfo(path);
                     if (!Directory.Exists(path))
                         Directory.CreateDirectory(info.DirectoryName ?? throw new ArgumentException("Cannot get directory name."));
+
                     // Write data to disk.
-                    await using FileStream fs = new(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+                    await using FileStream fs = new(path, outputStreamOptions);
                     await fs.WriteAsync(data, this.cancellationTokenSource.Token);
                     task.Increment(1);
                 }
@@ -178,20 +181,17 @@ internal sealed class ArchiveCommand : AsyncCommand<ArchiveCommand.Settings> {
     /// </summary>
     /// <param name="archive">The archive from which to build the file tree.</param>
     /// <returns>The root of the file tree structure.</returns>
-    private Tree BuildFileTree(Archive archive) {
-        // Get all file paths from the archive.
-        var files = archive.GetFiles().ToArray();
-            
-        // Build tree using Spectre components.
+    private static Tree BuildFileTree(Archive archive) {
+        // Build a tree using Spectre components.
         Tree root = new(":open_file_folder: /");
         Dictionary<string, IHasTreeNodes> treeNodes = new() { ["/"] = root };
 
-        foreach (var file in files) {
-            var segments = file.Split('/', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        foreach (string file in archive.GetFiles()) {
+            string[] segments = file.Split('/', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
             StringBuilder pathBuilder = new();
             IHasTreeNodes parentNode = root;
             for (var i = 0; i < segments.Length; i++) {
-                var seg = segments[i];
+                string seg = segments[i];
                 pathBuilder.Append('/').Append(seg);
                 var currentPath = pathBuilder.ToString();
                 if (!treeNodes.ContainsKey(currentPath)) {

@@ -1,34 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+﻿// rpaextract - ArchiveReader.cs
+// Copyright (C) 2017-2026 Fabian Creutz.
+// 
+// Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the
+// European Commission - subsequent versions of the EUPL (the "Licence");
+// 
+// You may not use this work except in compliance with the Licence.
+// You may obtain a copy of the Licence at:
+// 
+// https://joinup.ec.europa.eu/software/page/eupl
+// 
+// Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the Licence for the specific language governing permissions and limitations under the Licence.
 
 namespace rpaextract.API;
 
 /// <summary>
 ///     Provides an abstract class to implement custom Ren'py archive readers to read and extract files from them.
 /// </summary>
-public abstract class ArchiveReader : IDisposable {
-    /// <summary>
-    ///     Gets the information of the loaded file as an instance of the <see cref="FileInfo" /> class.
-    /// </summary>
-    protected FileInfo File { get; }
-    
+public abstract class ArchiveReader : IDisposable, IAsyncDisposable {
     /// <summary>
     ///     Gets the number of files in the archive.
     /// </summary>
     public abstract int Length { get; }
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="ArchiveReader" /> class.
-    /// </summary>
-    /// <param name="file">The information of the file to load as an archive as an instance of <see cref="FileInfo" /> class.</param>
-    protected ArchiveReader(FileInfo file) {
-        if (!file.Exists || file.Attributes.HasFlag(FileAttributes.Directory))
-            throw new FileNotFoundException("The specified archive file was not found.", file.FullName);
-        this.File = file;
-    }
 
     /// <summary>
     ///     Gets a value indicating whether the loaded file is supported and can be read by this implementation of the
@@ -67,11 +61,12 @@ public abstract class ArchiveReader : IDisposable {
     ///     Gets the archive version from the loaded file.
     /// </summary>
     /// <param name="token">The <seealso cref="CancellationToken" /> to cancel the task.</param>
-    /// <returns>The archive version as an value of <see cref="ArchiveVersion" />.</returns>
+    /// <returns>The archive version as the corresponding <see cref="ArchiveVersion" /> value.</returns>
     public abstract ValueTask<ArchiveVersion> GetArchiveVersionAsync(CancellationToken token = default);
     
-    /// <summary>
-    ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
+    /// <inheritdoc />
     public abstract void Dispose();
+
+    /// <inheritdoc />
+    public abstract ValueTask DisposeAsync();
 }

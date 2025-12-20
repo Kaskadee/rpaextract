@@ -1,9 +1,22 @@
-﻿using System;
+﻿// rpaextract - ArchiveIndex.cs
+// Copyright (C) 2017-2026 Fabian Creutz.
+// 
+// Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the
+// European Commission - subsequent versions of the EUPL (the "Licence");
+// 
+// You may not use this work except in compliance with the Licence.
+// You may obtain a copy of the Licence at:
+// 
+// https://joinup.ec.europa.eu/software/page/eupl
+// 
+// Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the Licence for the specific language governing permissions and limitations under the Licence.
 
 namespace rpaextract;
 
 /// <summary>
-///     Represents an archive entry deserialized by an implemention of the <see cref="API.ArchiveReader" /> interface.
+///     Represents an archive entry deserialized by an implementation of the <see cref="API.ArchiveReader" /> interface.
 /// </summary>
 public sealed class ArchiveIndex {
     /// <summary>
@@ -19,7 +32,7 @@ public sealed class ArchiveIndex {
     /// <summary>
     ///     Gets the checksum of the file.
     /// </summary>
-    public uint Checksum { get; set; }
+    public uint Checksum { get; init; }
 
     /// <summary>
     ///     Gets the length of the file in bytes.
@@ -27,7 +40,7 @@ public sealed class ArchiveIndex {
     public int Length { get; }
 
     /// <summary>
-    ///     Gets the prefix of this file. This seems to be optional and is appended to the beginning of the file data.
+    ///     Gets the prefix of this file. This seems optional and is appended to the beginning of the file data.
     /// </summary>
     public ReadOnlyMemory<byte> Prefix { get; }
 

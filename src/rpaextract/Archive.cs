@@ -5,11 +5,7 @@
  * http://www.wtfpl.net/txt/copying/
  */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.Frozen;
 using JetBrains.Annotations;
 using rpaextract.API;
 
@@ -18,9 +14,8 @@ namespace rpaextract;
 /// <summary>
 ///     Provides class to parse and extract Ren'py archives.
 /// </summary>
-internal sealed class Archive : IDisposable {
-    private static readonly Type[] loadedArchiveReaders = { typeof(RenpyArchiveReader), typeof(YVANeusEXArchiveReader) };
-
+internal sealed class Archive : IDisposable, IAsyncDisposable {
+    private static readonly FrozenSet<Type> AvailableArchiveReaders = FrozenSet.ToFrozenSet([typeof(RenpyArchiveReader)]);
     private readonly ArchiveReader archiveReader;
     
     /// <summary>
@@ -56,9 +51,9 @@ internal sealed class Archive : IDisposable {
     public IEnumerable<string> GetFiles() => this.archiveReader.GetFiles();
 
     /// <summary>
-    ///     Enumerates the archive indices in the archive.
+    ///     Lists the archive indices in the archive.
     /// </summary>
-    /// <returns>The enumeration of all archive indices as a <seealso cref="ArchiveIndex" />.</returns>
+    /// <returns>The enumeration of all archive indices as a <see cref="ArchiveIndex" />.</returns>
     public IEnumerable<ArchiveIndex> EnumerateIndices() => this.archiveReader.EnumerateIndices();
 
     /// <summary>
@@ -84,9 +79,10 @@ internal sealed class Archive : IDisposable {
             throw new FileNotFoundException("The specified archive couldn't be found!", fi.FullName);
         if (fi.Length < 51)
             throw new ArgumentOutOfRangeException(nameof(fi), "The file is too small to be a valid archive!");
-        foreach (Type archiveReaderType in loadedArchiveReaders) {
+        foreach (Type archiveReaderType in AvailableArchiveReaders) {
             Console.WriteLine($"(Info) Trying to parse archive using {archiveReaderType}...");
-            // Try to create new instance of archive reader type.
+
+            // Try to create a new instance of the archive reader.
             if (Activator.CreateInstance(archiveReaderType, fi) is not ArchiveReader reader) {
                 Console.WriteLine($"(Error) Failed to create instance of {archiveReaderType}.");
                 continue;
@@ -95,7 +91,7 @@ internal sealed class Archive : IDisposable {
             // Check if the archive reader is able to parse the archive.
             await reader.LoadAsync(token);
             if (!reader.IsSupported()) {
-                reader.Dispose();
+                await reader.DisposeAsync();
                 Console.WriteLine($"(Error) {archiveReaderType.FullName} is not able to parse the specified archive.");
                 continue;
             }
@@ -106,8 +102,9 @@ internal sealed class Archive : IDisposable {
         throw new NotSupportedException("No registered reader is able to parse the specified archive.");
     }
     
-    /// <summary>
-    ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
+    /// <inheritdoc />
     public void Dispose() => this.archiveReader.Dispose();
+
+    /// <inheritdoc />
+    public ValueTask DisposeAsync() => this.archiveReader.DisposeAsync();
 }
